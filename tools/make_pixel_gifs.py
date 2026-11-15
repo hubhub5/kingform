@@ -148,55 +148,128 @@ def eyes_closed(sprite, eyes, fur):
     return f
 
 
-def make_main():
-    s = studio_sprite(72)
-    s.save(OUT / "yul-sprite.png")
-    eyes = [(29, 21), (47, 21)]
-    fur = s.getpixel((38, 16))[:3]
-    closed = eyes_closed(s, eyes, fur)
-    heart, spark = draw_map(HEART, HEART_PAL), draw_map(SPARK, SPARK_PAL)
-    W, H = 96, 88
-    frames, durs = [], []
-    bounce = [0, -1, -2, -3, -2, -1, 0, 0, 0, 0, 0, 0]
-    for i, dy in enumerate(bounce):
-        c = canvas(W, H)
-        body = closed if i in (8, 9) else s
-        c.alpha_composite(body, (12, 12 + dy))
-        # 하트가 오른쪽 위로 떠오름
-        hy = 30 - i * 2
-        if i < 10:
-            c.alpha_composite(heart, (82, max(0, hy)))
-        if i % 4 < 2:
-            c.alpha_composite(spark, (4, 8))
+# ---------------------------------------------------------------- 메인: '쳐다보는 킹율' (윈도우 사진 기반)
+STARE_BOX = (60, 60, 570, 400)          # 원본에서 강아지만 (510x340)
+STARE_EYES = [(185, 100), (345, 98)]     # 크롭 좌표 기준 눈 중심
+STARE_W, STARE_H = 108, 72
+
+
+def stare_base():
+    """방송 로고를 지우고 라벤더 톤으로 보정한 고해상도 크롭."""
+    im = Image.open(SRC / "yul-window.png").convert("RGB").crop(STARE_BOX)
+    px = im.load()
+    W, H = im.size
+    # 왼쪽 위 로고 영역: 바로 아래 행 색으로 채움
+    for x in range(0, 90):
+        c = px[x, 80]
+        for y in range(0, 76):
+            px[x, y] = c
+    # 오른쪽 아래 플로피 스티커: 왼쪽 열 색으로 채움
+    for y in range(195, H):
+        c = px[438, y]
+        for x in range(440, W):
+            px[x, y] = c
+    # 메꾼 부분 경계 부드럽게
+    soft = im.filter(ImageFilter.GaussianBlur(6))
+    m = Image.new("L", im.size, 0)
+    d = ImageDraw.Draw(m)
+    d.rectangle([0, 0, 96, 82], fill=255)
+    d.rectangle([432, 188, W, H], fill=255)
+    m = m.filter(ImageFilter.GaussianBlur(4))
+    im = Image.composite(soft, im, m)
+    # 라벤더 그레이딩: 어두운 곳은 진보라, 밝은 곳은 연라벤더 쪽으로 30% 섞기
+    lum = im.convert("L")
+    grad = Image.merge("RGB", (
+        lum.point(lambda v: int(43 + (238 - 43) * v / 255)),
+        lum.point(lambda v: int(22 + (232 - 22) * v / 255)),
+        lum.point(lambda v: int(84 + (252 - 84) * v / 255)),
+    ))
+    im = Image.blend(im, grad, 0.32)
+    return ImageEnhance.Contrast(im).enhance(1.12)
+
+
+def stare_frame(base, zoom=1.0, dx=0, dy=0, blink=False, shine=0):
+    """zoom: 코 쪽으로 다가오는 정도, dx/dy: 픽셀 흔들림."""
+    W, H = base.size
+    cx, cy = 262, 150                       # 확대 중심(코 위)
+    cw, ch = W / zoom, H / zoom
+    x0 = min(max(cx - cw / 2 - dx * W / STARE_W, 0), W - cw)
+    y0 = min(max(cy - ch / 2 - dy * H / STARE_H, 0), H - ch)
+    view = base.crop((int(x0), int(y0), int(x0 + cw), int(y0 + ch)))
+    f = view.resize((STARE_W, STARE_H), Image.LANCZOS)
+    f = f.quantize(colors=20, method=Image.MEDIANCUT, dither=Image.NONE).convert("RGBA")
+    s = STARE_W / cw
+    d = ImageDraw.Draw(f)
+    for ex, ey in STARE_EYES:
+        fx, fy = round((ex - x0) * s), round((ey - y0) * s)
+        r = max(3, round(3.4 * zoom))
+        if blink:
+            # 눈 양옆 털 색 평균으로 눈을 덮고, 아래로 휜 감은 눈 선
+            a, b = f.getpixel((fx - r - 1, fy)), f.getpixel((fx, fy - r - 3))
+            fur = tuple((a[i] + b[i] * 2) // 3 for i in range(3)) + (255,)
+            d.ellipse([fx - r, fy - r, fx + r, fy + r], fill=fur)
+            d.line([fx - r + 1, fy + 1, fx + r - 1, fy + 1], fill=INK + (255,))
+            d.point([(fx - r, fy), (fx + r, fy)], fill=INK + (255,))
         else:
-            c.alpha_composite(spark, (86, 60))
-        frames.append(c)
-        durs.append(140 if i not in (8, 9) else 90)
+            # 눈 하이라이트 반짝
+            o = 1 + shine
+            d.rectangle([fx + 1, fy - 2 - shine, fx + o, fy - 2], fill=WHITE + (255,))
+    # 1px 테두리
+    d.rectangle([0, 0, STARE_W - 1, STARE_H - 1], outline=INK + (255,))
+    return f
+
+
+def make_main():
+    base = stare_base()
+    heart, spark = draw_map(HEART, HEART_PAL), draw_map(SPARK, SPARK_PAL)
+    seq = [  # (zoom, dy, blink, shine, ms, fx)
+        (1.00, 0, False, 0, 380, "s1"),
+        (1.00, 0, False, 1, 380, "s2"),
+        (1.00, 0, True, 0, 110, None),
+        (1.00, 0, False, 0, 300, "s1"),
+        (1.05, 0, False, 0, 140, None),
+        (1.10, 0, False, 0, 140, None),
+        (1.16, 0, False, 1, 700, "h"),
+        (1.16, 0, True, 0, 110, "h"),
+        (1.16, 0, False, 1, 400, "h2"),
+        (1.08, 0, False, 0, 120, None),
+        (1.00, 0, False, 0, 300, "s2"),
+    ]
+    frames, durs = [], []
+    for zoom, dy, blink, shine, ms, fx in seq:
+        f = stare_frame(base, zoom, 0, dy, blink, shine)
+        if fx == "s1":
+            f.alpha_composite(spark, (4, 4)); f.alpha_composite(spark, (96, 56))
+        elif fx == "s2":
+            f.alpha_composite(spark, (98, 6)); f.alpha_composite(spark, (6, 58))
+        elif fx == "h":
+            f.alpha_composite(heart, (96, 10)); f.alpha_composite(heart, (5, 14))
+        elif fx == "h2":
+            f.alpha_composite(heart, (96, 4)); f.alpha_composite(heart, (5, 8))
+        frames.append(f); durs.append(ms)
     save_gif(frames, OUT / "yul-main.gif", durs)
+    frames[0].save(OUT / "yul-sprite.png")
 
 
 def make_angry():
-    """이스터에그: '나가 살아!' 듣고 킹받은 킹율."""
-    s = studio_sprite(72)
+    """이스터에그: '나가 살아!' 듣고 킹받은 킹율 (같은 사진, 확대+흔들+빨강)."""
+    base = stare_base()
     anger = draw_map(ANGER, ANGER_PAL).resize((14, 12), Image.NEAREST)
-    W, H = 96, 88
     frames = []
-    offs = [(-4, 0), (4, -2), (-3, -3), (5, 0), (-5, -1), (3, -3)]
+    offs = [(-3, 0), (3, -1), (-2, 1), (3, 0), (-3, -1), (2, 1)]
     for i, (dx, dy) in enumerate(offs):
-        c = canvas(W, H)
-        body = s.rotate(8 if i % 2 else -8, resample=Image.NEAREST, expand=False)
-        # 붉은 기운
-        r, g, b, a = body.split()
-        tinted = Image.merge("RGBA", (r.point(lambda v: min(255, v + 60)), g.point(lambda v: int(v * .75)), b.point(lambda v: int(v * .85)), a))
-        c.alpha_composite(tinted if i % 2 else body, (12 + dx, 12 + dy))
-        c.alpha_composite(anger, (74 if i % 2 else 6, 4))
-        d = ImageDraw.Draw(c)
-        # 스피드 라인
+        f = stare_frame(base, 1.22, dx, dy, blink=False, shine=1)
+        if i % 2:
+            r, g, b, a = f.split()
+            f = Image.merge("RGBA", (r.point(lambda v: min(255, v + 70)), g.point(lambda v: int(v * .7)), b.point(lambda v: int(v * .8)), a))
+        f.alpha_composite(anger, (88 if i % 2 else 6, 4))
+        d = ImageDraw.Draw(f)
         for k in range(3):
-            y = 30 + k * 12 + (i % 2) * 4
-            d.line([(0, y), (6, y)], fill=INK + (255,))
-            d.line([(W - 7, y + 3), (W - 1, y + 3)], fill=INK + (255,))
-        frames.append(c)
+            y = 26 + k * 10 + (i % 2) * 3
+            d.line([(2, y), (9, y)], fill=WHITE + (255,))
+            d.line([(STARE_W - 10, y + 3), (STARE_W - 3, y + 3)], fill=WHITE + (255,))
+        d.rectangle([0, 0, STARE_W - 1, STARE_H - 1], outline=INK + (255,))
+        frames.append(f)
     save_gif(frames, OUT / "yul-angry.gif", [60] * len(frames))
 
 
