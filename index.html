@@ -60,7 +60,7 @@ img.px,.px{image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* 떠다니는 도트 스티커 */
 .stickers{position:absolute;inset:0;pointer-events:none;z-index:0}
-.stickers img{position:absolute;width:33px;opacity:.7;animation:float 3.2s ease-in-out infinite}
+.stickers img{position:absolute;width:20px!important;opacity:.75;animation:float 3.2s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-10px) rotate(6deg)}}
 
 /* ---------- HUD ---------- */
@@ -207,16 +207,17 @@ textarea{resize:none;height:84px;line-height:1.45}
 
 /* ---------- 동의 ---------- */
 .consent{border:3px solid var(--ink);background:#fff;margin-top:12px}
-.consent>.chk{padding:12px;border-bottom:2px dashed var(--lav)}
-.consent>.chk:last-child{border-bottom:0}
-.consent .all{background:var(--lav-3);font-weight:900}
-.consent details{padding:0 12px 10px 46px;margin-top:-6px;font-size:12px;color:var(--ink-2)}
+.cgroup{padding:12px;border-bottom:2px dashed var(--lav)}
+.cgroup:last-child{border-bottom:0}
+.cgroup.all{background:var(--lav-3)}
+.consent .all .chk{font-weight:900}
+.consent details{padding:4px 0 0 34px;font-size:12px;color:var(--ink-2)}
 .consent summary{cursor:pointer;font-weight:800;text-decoration:underline;list-style:none}
 .consent summary::-webkit-details-marker{display:none}
 .consent table{width:100%;border-collapse:collapse;margin-top:6px}
 .consent th,.consent td{border:1px solid var(--lav);padding:5px 6px;text-align:left;vertical-align:top;line-height:1.45}
 .consent th{background:var(--lav-3);width:28%;white-space:nowrap}
-.sub-chks{padding:0 12px 10px 46px;margin-top:-6px;display:flex;flex-direction:column;gap:2px}
+.sub-chks{padding:4px 0 2px 34px;display:flex;flex-direction:column;gap:2px}
 .sub-chks .chk{font-size:13px}
 .bonus{display:flex;align-items:center;gap:8px;background:var(--pink-2);border:2px dashed var(--pink);padding:8px 10px;margin-top:10px;font-size:13px;font-weight:800;line-height:1.4}
 .bonus img{width:28px;flex:none}
@@ -268,12 +269,12 @@ textarea{resize:none;height:84px;line-height:1.45}
 <body>
 <main class="app" id="app">
   <div class="stickers" aria-hidden="true">
-    <img class="px" src="assets/i-bone.png" style="top:118px;left:8px;animation-delay:-.4s" alt="">
-    <img class="px" src="assets/i-star.png" style="top:150px;right:12px;width:24px;animation-delay:-1.2s" alt="">
-    <img class="px" src="assets/i-soju.png" style="bottom:120px;left:10px;width:22px;animation-delay:-2s" alt="">
-    <img class="px" src="assets/i-cake.png" style="bottom:170px;right:10px;width:30px;animation-delay:-.8s" alt="">
-    <img class="px" src="assets/i-heart.png" style="top:46%;left:6px;width:24px;animation-delay:-1.6s" alt="">
-    <img class="px" src="assets/i-paw.png" style="top:58%;right:8px;width:24px;animation-delay:-2.4s" alt="">
+    <img class="px" src="assets/i-bone.png" style="top:200px;left:-3px;animation-delay:-.4s" alt="">
+    <img class="px" src="assets/i-star.png" style="top:150px;right:-3px;width:24px;animation-delay:-1.2s" alt="">
+    <img class="px" src="assets/i-soju.png" style="bottom:140px;left:-3px;width:22px;animation-delay:-2s" alt="">
+    <img class="px" src="assets/i-cake.png" style="bottom:200px;right:-3px;width:30px;animation-delay:-.8s" alt="">
+    <img class="px" src="assets/i-heart.png" style="top:46%;left:-3px;width:24px;animation-delay:-1.6s" alt="">
+    <img class="px" src="assets/i-paw.png" style="top:62%;right:-3px;width:24px;animation-delay:-2.4s" alt="">
   </div>
 
   <div class="demo" id="demoBar" hidden>DEMO 모드 · 시트 연결 전이라 이 기기에만 저장돼요</div>
@@ -331,22 +332,16 @@ textarea{resize:none;height:84px;line-height:1.45}
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
   </section>
 
-  <!-- 2. 파트너 선택 -->
+  <!-- 2. 우리 강아지 소개 -->
   <section class="screen" data-step="2">
-    <div><span class="stage-tag">STAGE 2 · 파트너 선택</span>
-      <h2>너의 파트너는<br>누구야?</h2>
+    <div><span class="stage-tag">STAGE 2 · 파트너 소개</span>
+      <h2>너의 강아지를<br>소개해줘! <img class="px" src="assets/i-dog.png" alt="" style="width:39px;vertical-align:-4px"></h2>
       <p class="sub">견종 알려주면 맞춤 선물 줄게 🦴</p></div>
-    <div class="picks" id="species">
-      <button type="button" class="pick" data-v="강아지" aria-pressed="false"><img class="px" src="assets/i-dog.png" alt="">강아지</button>
-      <button type="button" class="pick" data-v="고양이" aria-pressed="false"><img class="px" src="assets/i-cat.png" alt="">고양이</button>
-      <button type="button" class="pick" data-v="둘 다" aria-pressed="false"><img class="px" src="assets/i-paw.png" alt="">둘 다</button>
-      <button type="button" class="pick" data-v="예비 보호자" aria-pressed="false"><img class="px" src="assets/i-egg.png" alt="">예비 집사</button>
-    </div>
     <div id="petFields">
-      <div class="field"><label for="petName">파트너 이름 <small>선택 · 교환권에 들어가</small></label>
+      <div class="field"><label for="petName">강아지 이름 <small>선택 · 교환권에 들어가</small></label>
         <input type="text" id="petName" maxlength="12" placeholder="율이"></div>
       <div class="row">
-        <div class="field"><label for="breed">견종·묘종</label>
+        <div class="field"><label for="breed">견종</label>
           <input type="text" id="breed" list="breeds" maxlength="20" placeholder="이탈리안 그레이하운드"></div>
         <div class="field" style="flex:0 0 38%"><label for="petAge">나이</label>
           <select id="petAge">
@@ -414,18 +409,21 @@ textarea{resize:none;height:84px;line-height:1.45}
       <h2>마지막!<br>약속 도장 찍기</h2>
       <p class="sub">필수만 체크해도 선물은 받아.</p></div>
     <div class="consent">
-      <label class="chk all"><input type="checkbox" id="allOk"><span class="box"></span><span>아래 내용에 모두 동의해요</span></label>
+      <div class="cgroup all"><label class="chk all"><input type="checkbox" id="allOk"><span class="box"></span><span>아래 내용에 모두 동의해요</span></label></div>
 
+      <div class="cgroup">
       <label class="chk"><input type="checkbox" id="privacyOk"><span class="box"></span><span><span class="req">[필수]</span> 개인정보 수집·이용 동의</span></label>
       <details><summary>자세히 보기</summary>
         <table>
-          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려동물 종류·이름·품종·나이, 거주 지역(시·군·구), 관심 주제</td></tr>
+          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려견 이름·견종·나이, 거주 지역(시·군·구), 관심 주제</td></tr>
           <tr><th>이용 목적</th><td>메가주 일산 현장 증정품 지급, 중복 수령 확인, 이벤트 문의 응대</td></tr>
           <tr><th>보유 기간</th><td>행사 종료 후 3개월 뒤 파기 (아래 선택 동의 시 해당 목적 범위 내 보유)</td></tr>
         </table>
         <p style="margin-top:6px">동의를 거부할 수 있으나, 이 경우 증정품을 받을 수 없어요. 만 14세 미만은 참여할 수 없어요.</p>
       </details>
+      </div>
 
+      <div class="cgroup">
       <label class="chk"><input type="checkbox" id="mktOk"><span class="box"></span><span><span class="opt">[선택]</span> 마케팅 활용 및 광고성 정보 수신 동의</span></label>
       <div class="sub-chks">
         <label class="chk"><input type="checkbox" id="mktSms"><span class="box"></span><span>문자(SMS·MMS) 수신</span></label>
@@ -433,7 +431,7 @@ textarea{resize:none;height:84px;line-height:1.45}
       </div>
       <details><summary>자세히 보기</summary>
         <table>
-          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려동물 정보, 거주 지역, 관심 주제</td></tr>
+          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려견 정보, 거주 지역, 관심 주제</td></tr>
           <tr><th>이용 목적</th><td>킹율 채널의 이벤트·혜택 안내 및 반려동물 관련 제휴 상품·서비스 광고 정보 발송 (관심 주제에 맞춘 맞춤 발송)</td></tr>
           <tr><th>수신 매체</th><td>위에서 체크한 매체로만 발송해요. 문자만 동의하면 카카오톡 광고는 보내지 않아요.</td></tr>
           <tr><th>보유 기간</th><td>동의 철회 시 또는 수집일로부터 2년 중 먼저 오는 날까지</td></tr>
@@ -441,6 +439,7 @@ textarea{resize:none;height:84px;line-height:1.45}
         </table>
         <p style="margin-top:6px">동의하지 않아도 증정품은 똑같이 받을 수 있어요. 광고 메시지에는 (광고) 표시와 무료 수신거부 방법이 들어가며, 밤 9시~아침 8시에는 보내지 않아요. 언제든 수신을 거부할 수 있어요.</p>
       </details>
+      </div>
     </div>
     <div class="bonus"><img class="px" src="assets/i-star.png" alt=""><span id="bonusText">선택 동의하면 <u>킹율 굿즈 추첨</u>에 자동 응모!</span></div>
     <p class="fine">개인정보 보호 책임: 킹율 채널 운영팀 · 문의는 행사 부스 또는 유튜브 @킹율 채널 정보를 통해 받아요.</p>
@@ -512,7 +511,6 @@ $('#bonusText').innerHTML = CONFIG.BONUS_TEXT;
 
 /* ---------- 데이터: 품종 / 지역 ---------- */
 const DOGS = ['말티즈','푸들','토이푸들','포메라니안','비숑 프리제','치와와','시츄','요크셔테리어','닥스훈트','웰시코기','시바견','진돗개','골든 리트리버','래브라도 리트리버','보더콜리','프렌치 불독','퍼그','비글','슈나우저','이탈리안 그레이하운드','휘핏','그레이하운드','사모예드','허스키','말라뮤트','스피츠','파피용','미니핀','잭러셀테리어','베들링턴테리어','코카스파니엘','카발리에 킹찰스 스파니엘','셰틀랜드 쉽독','보스턴테리어','도베르만','풍산개','믹스견'];
-const CATS = ['코리안 숏헤어','러시안 블루','브리티시 숏헤어','스코티시 폴드','먼치킨','페르시안','랙돌','노르웨이숲','메인쿤','아비시니안','벵갈','샴','터키시 앙고라','엑조틱 숏헤어','스핑크스','아메리칸 숏헤어','믹스묘'];
 const REGIONS = {
   '서울':'강남구,강동구,강북구,강서구,관악구,광진구,구로구,금천구,노원구,도봉구,동대문구,동작구,마포구,서대문구,서초구,성동구,성북구,송파구,양천구,영등포구,용산구,은평구,종로구,중구,중랑구',
   '경기':'고양시 일산동구,고양시 일산서구,고양시 덕양구,파주시,김포시,수원시,성남시,용인시,부천시,안산시,안양시,남양주시,화성시,평택시,의정부시,시흥시,광명시,광주시,군포시,하남시,오산시,이천시,안성시,의왕시,양주시,구리시,포천시,동두천시,과천시,여주시,양평군,가평군,연천군',
@@ -543,7 +541,7 @@ sido.addEventListener('change', () => {
 });
 
 /* ---------- 상태 ---------- */
-const state = { step: 0, coins: 0, species: '', topics: new Set(), maxStep: 0 };
+const state = { step: 0, coins: 0, topics: new Set(), maxStep: 0 };
 const STAGES = 6; // 1~6 진행바
 
 function go(n) {
@@ -590,16 +588,8 @@ phone.addEventListener('input', () => {
 });
 const breedList = $('#breeds');
 function fillBreeds(list) { breedList.innerHTML = list.map(b => `<option value="${b}">`).join(''); }
-fillBreeds(DOGS.concat(CATS));
+fillBreeds(DOGS);
 
-$$('#species .pick').forEach(b => b.addEventListener('click', () => {
-  $$('#species .pick').forEach(x => x.setAttribute('aria-pressed', x === b));
-  state.species = b.dataset.v;
-  const pre = state.species === '예비 보호자';
-  $('#petFields').style.display = pre ? 'none' : '';
-  fillBreeds(state.species === '강아지' ? DOGS : state.species === '고양이' ? CATS : DOGS.concat(CATS));
-  $('#breed').placeholder = state.species === '고양이' ? '코리안 숏헤어' : '이탈리안 그레이하운드';
-}));
 $$('#topics .item').forEach(b => b.addEventListener('click', () => {
   const on = b.getAttribute('aria-pressed') !== 'true';
   b.setAttribute('aria-pressed', on);
@@ -654,11 +644,8 @@ function validate(step) {
     if (!$('#age14').checked) return fail(1, '만 14세 이상만 참여할 수 있어');
   }
   if (step === 2) {
-    if (!state.species) return fail(2, '파트너를 골라줘!');
-    if (state.species !== '예비 보호자') {
-      if (!$('#breed').value.trim()) return fail(2, '견종·묘종을 알려줘 (모르면 "믹스")', $('#breed'));
-      if (!$('#petAge').value) return fail(2, '나이를 골라줘', $('#petAge'));
-    }
+    if (!$('#breed').value.trim()) return fail(2, '견종을 알려줘 (모르면 "믹스견")', $('#breed'));
+    if (!$('#petAge').value) return fail(2, '나이를 골라줘', $('#petAge'));
   }
   if (step === 3) {
     if (!sido.value) return fail(3, '시·도를 골라줘', sido);
@@ -691,12 +678,11 @@ function payload() {
   const topics = [...state.topics];
   const box = pickBox(topics);
   const now = new Date().toISOString();
-  const pre = state.species === '예비 보호자';
   return {
     event: CONFIG.EVENT, consentVersion: CONFIG.CONSENT_VERSION, clientTime: now,
     name: $('#name').value.trim(), phone: digits(), age14: $('#age14').checked,
-    species: state.species, petName: pre ? '' : $('#petName').value.trim(),
-    breed: pre ? '' : $('#breed').value.trim(), petAge: pre ? '' : $('#petAge').value,
+    species: '강아지', petName: $('#petName').value.trim(),
+    breed: $('#breed').value.trim(), petAge: $('#petAge').value,
     sido: sido.value, sigungu: sigungu.value, topics,
     message: msg.value.trim(), nick: $('#nick').value.trim(), snsOk: $('#snsOk').checked,
     privacyOk: privacyOk.checked, mktSms: mktSms.checked, mktKakao: mktKakao.checked,
