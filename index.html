@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>킹율의 퀘스트</title>
+<meta name="description" content="메가주 일산 현장 이벤트 · 킹율이 선물 쏜다!">
+<meta name="theme-color" content="#c9bfe8">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preload" href="assets/yul-main.gif" as="image">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.39.3/dist/galmuri.css">
+<style>
+/* ---------- 나눔스퀘어 네오 (네이버 공식 CDN, 굵기별 매핑) ---------- */
+@font-face{font-family:'NSN';font-weight:300;font-display:swap;src:url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.woff) format('woff')}
+@font-face{font-family:'NSN';font-weight:400;font-display:swap;src:url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff) format('woff')}
+@font-face{font-family:'NSN';font-weight:700;font-display:swap;src:url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff) format('woff')}
+@font-face{font-family:'NSN';font-weight:800;font-display:swap;src:url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff) format('woff')}
+@font-face{font-family:'NSN';font-weight:900;font-display:swap;src:url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.woff) format('woff')}
+
+:root{
+  --lav:#c9bfe8; --lav-2:#ddd5f5; --lav-3:#efeafc;
+  --ink:#2b1654; --ink-2:#5b4a8a;
+  --pink:#ff4fa3; --pink-2:#ffc2e0;
+  --blue:#6d7cff; --yellow:#ffd640; --mint:#7fe0c4;
+  --paper:#fffdf7; --red:#e8243c;
+  --px:3px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{
+  font-family:'NSN','NanumSquareNeo','Apple SD Gothic Neo',sans-serif;
+  letter-spacing:-0.07em;
+  color:var(--ink);
+  background-color:var(--lav);
+  background-image:
+    radial-gradient(var(--lav-2) 2px, transparent 2px),
+    radial-gradient(var(--lav-2) 2px, transparent 2px);
+  background-size:24px 24px; background-position:0 0,12px 12px;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
+}
+img.px,.px{image-rendering:pixelated;image-rendering:crisp-edges}
+.g{font-family:'Galmuri11',monospace;letter-spacing:0}
+.g9{font-family:'Galmuri9',monospace;letter-spacing:0}
+
+/* ---------- 모바일 고정 프레임 ---------- */
+.app{
+  position:relative; width:100%; max-width:420px; min-height:100dvh; margin:0 auto;
+  background:var(--lav-3);
+  box-shadow:0 0 0 3px var(--ink), 12px 0 0 0 rgba(43,22,84,.18);
+  overflow:hidden;
+  display:flex; flex-direction:column;
+}
+@media (min-width:480px){
+  body{padding:24px 0}
+  .app{min-height:calc(100dvh - 48px); max-height:none}
+}
+
+/* 떠다니는 도트 스티커 */
+.stickers{position:absolute;inset:0;pointer-events:none;z-index:0}
+.stickers img{position:absolute;width:33px;opacity:.7;animation:float 3.2s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+
+/* ---------- HUD ---------- */
+.hud{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;background:var(--ink);color:#fff;font-size:12px;
+}
+.hud .coins{display:flex;align-items:center;gap:6px;color:var(--yellow)}
+.hud .coins img{width:22px;height:20px}
+.hud .lives{display:flex;gap:3px}
+.hud .lives img{width:18px}
+.track{
+  position:relative;z-index:2;height:44px;margin:0 16px;
+  border-bottom:3px dashed var(--ink-2);
+}
+.track .runner{position:absolute;bottom:-2px;left:0;width:56px;height:36px;transition:left .6s steps(6)}
+.track .goal{position:absolute;right:0;bottom:2px;width:36px;animation:float 1.6s ease-in-out infinite}
+.track.hide{display:none}
+
+/* ---------- 레트로 윈도우 ---------- */
+.screen{display:none;position:relative;z-index:1;flex:1;padding:14px 16px 24px;flex-direction:column;gap:14px}
+.screen.on{display:flex;animation:pop .28s steps(4)}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.win{
+  background:var(--paper);border:3px solid var(--ink);
+  box-shadow:6px 6px 0 var(--ink);
+}
+.win-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:6px 8px;border-bottom:3px solid var(--ink);
+  background:linear-gradient(90deg,#8f7bff,#c7a2ff 55%,#ff9fd0);
+  color:#fff;font-size:12px;
+}
+.win-bar .t{font-family:'Galmuri11',monospace;letter-spacing:0;font-style:italic;text-shadow:2px 2px 0 var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.win-btns{display:flex;gap:4px;flex:none}
+.win-btns i{display:grid;place-items:center;width:20px;height:18px;background:var(--lav-3);border:2px solid var(--ink);color:var(--ink);font-style:normal;font-size:11px;font-family:'Galmuri9',monospace;letter-spacing:0;line-height:1}
+.win-body{padding:16px}
+
+.stage-tag{display:inline-block;font-family:'Galmuri11',monospace;letter-spacing:0;font-size:12px;background:var(--ink);color:var(--yellow);padding:4px 8px}
+h1,h2{font-weight:900;line-height:1.25}
+h2{font-size:24px;margin-top:8px}
+.sub{font-size:14px;color:var(--ink-2);margin-top:6px;line-height:1.5}
+
+/* ---------- 입력 ---------- */
+.field{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.field label,.lbl{font-size:14px;font-weight:800}
+.field label small,.lbl small{font-weight:400;color:var(--ink-2);margin-left:4px}
+input[type=text],input[type=tel],select,textarea{
+  font:inherit;letter-spacing:-0.07em;font-size:17px;font-weight:700;color:var(--ink);
+  width:100%;padding:12px 12px;border:3px solid var(--ink);background:#fff;border-radius:0;
+  box-shadow:inset 3px 3px 0 var(--lav-2);outline:none;-webkit-appearance:none;appearance:none;
+}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:36px}
+input:focus,select:focus,textarea:focus{background:#fffbe6;box-shadow:inset 3px 3px 0 var(--yellow)}
+textarea{resize:none;height:84px;line-height:1.45}
+.row{display:flex;gap:8px}
+.row>*{flex:1;min-width:0}
+.err{font-size:13px;color:var(--red);font-weight:800;min-height:0}
+.err:empty{display:none}
+.invalid{border-color:var(--red)!important;animation:shake .3s steps(3)}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* 체크박스 (도트) */
+.chk{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:14px;line-height:1.45;padding:4px 0}
+.chk input{position:absolute;opacity:0;pointer-events:none}
+.chk .box{flex:none;width:24px;height:24px;border:3px solid var(--ink);background:#fff;display:grid;place-items:center;margin-top:-1px}
+.chk input:checked+.box{background:var(--pink)}
+.chk input:checked+.box::after{content:'';width:10px;height:6px;border-left:3px solid #fff;border-bottom:3px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.chk input:focus-visible+.box{outline:3px solid var(--yellow)}
+.req{color:var(--pink);font-weight:900}
+.opt{color:var(--blue);font-weight:900}
+
+/* 캐릭터 셀렉트 */
+.picks{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.pick{
+  font:inherit;letter-spacing:-0.07em;cursor:pointer;background:#fff;border:3px solid var(--ink);position:relative;
+  padding:10px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-size:12px;font-weight:800;color:var(--ink);box-shadow:3px 3px 0 var(--ink);
+}
+.pick img{width:39px;height:30px;object-fit:contain}
+.pick[aria-pressed=true]{background:var(--yellow);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.pick[aria-pressed=true]::before{content:'▼ P1';position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-family:'Galmuri9',monospace;letter-spacing:0;font-size:10px;color:var(--pink)}
+
+/* 아이템 슬롯 */
+.items{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.item{
+  font:inherit;letter-spacing:-0.07em;cursor:pointer;position:relative;
+  aspect-ratio:1/1.08;background:var(--lav-3);border:3px solid var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  font-size:12px;font-weight:800;color:var(--ink);
+  box-shadow:inset -3px -3px 0 var(--lav),inset 3px 3px 0 #fff;
+}
+.item img{width:36px;height:36px;object-fit:contain}
+.item[aria-pressed=true]{background:var(--pink-2);box-shadow:inset -3px -3px 0 var(--pink),inset 3px 3px 0 #fff;animation:twinkle .5s steps(2) 2}
+.item[aria-pressed=true]::after{content:'✔';position:absolute;top:2px;right:4px;font-size:12px;color:var(--pink)}
+@keyframes twinkle{50%{filter:brightness(1.25)}}
+
+/* ---------- 버튼 ---------- */
+.btn{
+  font:inherit;letter-spacing:-0.07em;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  padding:15px 16px;font-size:18px;font-weight:900;color:#fff;background:var(--pink);
+  border:3px solid var(--ink);box-shadow:0 6px 0 var(--ink);margin-bottom:6px;
+  text-decoration:none;
+}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+.btn.sec{background:#fff;color:var(--ink)}
+.btn.yel{background:var(--yellow);color:var(--ink)}
+.btn[disabled]{opacity:.6;pointer-events:none}
+.nav{display:flex;gap:10px;margin-top:auto;padding-top:8px}
+.nav .back{flex:0 0 64px;background:#fff;color:var(--ink);font-size:16px}
+.nav .next{flex:1}
+.blink{animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- 인트로 ---------- */
+.intro-stage{position:relative;display:grid;place-items:center;padding:6px 0 0;cursor:pointer;user-select:none;-webkit-user-select:none}
+.intro-stage img.yul{width:288px;height:264px}
+.bubble{
+  position:absolute;top:2px;left:50%;transform:translateX(-50%);
+  background:#fff;border:3px solid var(--ink);padding:6px 10px;font-weight:900;font-size:15px;white-space:nowrap;
+  box-shadow:3px 3px 0 var(--ink);
+}
+.bubble::after{content:'';position:absolute;bottom:-11px;left:50%;margin-left:-6px;border:6px solid transparent;border-top-color:var(--ink)}
+.bubble.hot{background:var(--red);color:#fff;font-size:17px;animation:shake .2s steps(2) infinite}
+.meter{margin-top:6px;display:flex;align-items:center;gap:8px;font-size:12px}
+.meter .bar{flex:1;height:14px;border:3px solid var(--ink);background:#fff;position:relative}
+.meter .bar i{position:absolute;inset:0 auto 0 0;width:0;background:repeating-linear-gradient(90deg,var(--red) 0 6px,#ff7a8a 6px 9px);transition:width .2s steps(3)}
+.title-logo{text-align:center}
+.title-logo .k{font-size:38px;font-weight:900;line-height:1.05;color:var(--pink);text-shadow:3px 3px 0 var(--ink);-webkit-text-stroke:1.5px var(--ink)}
+.title-logo .s{font-size:15px;font-weight:800;margin-top:8px}
+.event-strip{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--ink);color:#fff;padding:5px 9px;font-size:12px;font-weight:800}
+.chip.p{background:var(--pink)}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+.rules div{background:#fff;border:2px solid var(--ink);padding:8px 4px;text-align:center;font-size:12px;font-weight:800;line-height:1.35}
+.rules img{display:block;margin:0 auto 4px;width:30px;height:27px;object-fit:contain}
+
+/* ---------- 한마디 ---------- */
+.mic{display:flex;gap:10px;align-items:flex-start;background:var(--yellow);border:3px solid var(--ink);padding:10px;margin-top:12px}
+.mic img{width:48px;height:48px;flex:none;border:2px solid var(--ink);background:var(--lav)}
+.mic p{font-size:13px;line-height:1.5;font-weight:700}
+.count{text-align:right;font-size:12px;color:var(--ink-2)}
+
+/* ---------- 동의 ---------- */
+.consent{border:3px solid var(--ink);background:#fff;margin-top:12px}
+.consent>.chk{padding:12px;border-bottom:2px dashed var(--lav)}
+.consent>.chk:last-child{border-bottom:0}
+.consent .all{background:var(--lav-3);font-weight:900}
+.consent details{padding:0 12px 10px 46px;margin-top:-6px;font-size:12px;color:var(--ink-2)}
+.consent summary{cursor:pointer;font-weight:800;text-decoration:underline;list-style:none}
+.consent summary::-webkit-details-marker{display:none}
+.consent table{width:100%;border-collapse:collapse;margin-top:6px}
+.consent th,.consent td{border:1px solid var(--lav);padding:5px 6px;text-align:left;vertical-align:top;line-height:1.45}
+.consent th{background:var(--lav-3);width:28%;white-space:nowrap}
+.sub-chks{padding:0 12px 10px 46px;margin-top:-6px;display:flex;flex-direction:column;gap:2px}
+.sub-chks .chk{font-size:13px}
+.bonus{display:flex;align-items:center;gap:8px;background:var(--pink-2);border:2px dashed var(--pink);padding:8px 10px;margin-top:10px;font-size:13px;font-weight:800;line-height:1.4}
+.bonus img{width:28px;flex:none}
+.fine{font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:8px}
+
+/* ---------- CLEAR ---------- */
+.clear-title{text-align:center;font-family:'Galmuri14','Galmuri11',monospace;letter-spacing:0;font-size:34px;color:var(--yellow);text-shadow:3px 3px 0 var(--ink),-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink)}
+.gacha{display:grid;place-items:center;min-height:240px;cursor:pointer;position:relative}
+.gacha img{width:192px;height:auto}
+.gacha .hint{position:absolute;bottom:4px;font-size:14px;font-weight:900}
+.ticket{
+  position:relative;background:#fff;border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);
+  padding:0;overflow:hidden;display:none;
+}
+.ticket.on{display:block;animation:pop .35s steps(5)}
+.ticket .top{background:var(--ink);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.ticket .main{display:flex;gap:12px;padding:14px;align-items:center}
+.ticket .main img{width:126px;height:120px;flex:none}
+.ticket .box-name{font-size:13px;font-weight:800;color:var(--ink-2)}
+.ticket .box-big{font-size:34px;font-weight:900;color:var(--pink);line-height:1.1;text-shadow:2px 2px 0 var(--ink)}
+.ticket .box-desc{font-size:13px;font-weight:700;margin-top:4px}
+.ticket .meta{display:grid;grid-template-columns:1fr 1fr;border-top:3px dashed var(--ink)}
+.ticket .meta div{padding:10px 14px;font-size:12px}
+.ticket .meta div+div{border-left:3px dashed var(--ink)}
+.ticket .meta b{display:block;font-size:20px;margin-top:2px}
+.ticket .clock{font-family:'Galmuri11',monospace;letter-spacing:0}
+.ticket .stamp{
+  position:absolute;right:8px;top:44px;width:66px;height:66px;border:4px solid var(--red);border-radius:50%;
+  color:var(--red);display:grid;place-items:center;text-align:center;font-weight:900;font-size:12px;line-height:1.05;
+  transform:rotate(-14deg) scale(2.4);opacity:0;background:rgba(255,255,255,.55);
+}
+.ticket.on .stamp{animation:stamp .4s .5s steps(4) forwards}
+@keyframes stamp{to{transform:rotate(-14deg) scale(1);opacity:.9}}
+.show-staff{text-align:center;font-weight:900;font-size:16px;background:var(--yellow);border:3px solid var(--ink);padding:10px}
+.dup{background:var(--lav-2);border:3px solid var(--ink);padding:10px 12px;font-size:14px;font-weight:800;text-align:center;display:none}
+.dup.on{display:block}
+
+/* 코인 팝업 · 파티클 */
+.fx{position:fixed;pointer-events:none;z-index:50;font-family:'Galmuri11',monospace;letter-spacing:0;font-size:20px;color:var(--yellow);text-shadow:2px 2px 0 var(--ink);animation:rise .9s steps(6) forwards}
+@keyframes rise{to{transform:translateY(-70px);opacity:0}}
+.heart-fx{position:fixed;pointer-events:none;z-index:50;width:22px;animation:burst .8s steps(6) forwards}
+@keyframes burst{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+
+.demo{position:relative;z-index:2;text-align:center;font-size:11px;background:var(--yellow);padding:4px;font-weight:800}
+.foot{position:relative;z-index:1;text-align:center;font-size:11px;color:var(--ink-2);padding:6px 16px 16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <div class="stickers" aria-hidden="true">
+    <img class="px" src="assets/i-bone.png" style="top:118px;left:8px;animation-delay:-.4s" alt="">
+    <img class="px" src="assets/i-star.png" style="top:150px;right:12px;width:24px;animation-delay:-1.2s" alt="">
+    <img class="px" src="assets/i-soju.png" style="bottom:120px;left:10px;width:22px;animation-delay:-2s" alt="">
+    <img class="px" src="assets/i-cake.png" style="bottom:170px;right:10px;width:30px;animation-delay:-.8s" alt="">
+    <img class="px" src="assets/i-heart.png" style="top:46%;left:6px;width:24px;animation-delay:-1.6s" alt="">
+    <img class="px" src="assets/i-paw.png" style="top:58%;right:8px;width:24px;animation-delay:-2.4s" alt="">
+  </div>
+
+  <div class="demo" id="demoBar" hidden>DEMO 모드 · 시트 연결 전이라 이 기기에만 저장돼요</div>
+
+  <div class="hud g" id="hud">
+    <span id="stageLabel">KINGYUL QUEST</span>
+    <span class="coins"><img class="px" src="assets/coin.gif" alt=""><span id="coins">0000</span></span>
+    <span class="lives" aria-hidden="true">
+      <img class="px" src="assets/i-heart.png" alt=""><img class="px" src="assets/i-heart.png" alt=""><img class="px" src="assets/i-heart.png" alt="">
+    </span>
+  </div>
+  <div class="track hide" id="track" aria-hidden="true">
+    <img class="px runner" id="runner" src="assets/yul-run.gif" alt="">
+    <img class="px goal" src="assets/i-bone.png" alt="">
+  </div>
+
+  <!-- 0. 인트로 -->
+  <section class="screen on" data-step="0">
+    <div class="win">
+      <div class="win-bar"><span class="t">What i simping is..</span><span class="win-btns"><i>_</i><i>□</i><i>×</i></span></div>
+      <div class="win-body">
+        <div class="title-logo">
+          <div class="k">킹율이<br>선물 쏜다!</div>
+          <div class="s">메가주 일산 현장 한정 이벤트 퀘스트</div>
+        </div>
+        <div class="intro-stage" id="yulTap" role="button" tabindex="0" aria-label="킹율 쓰다듬기">
+          <span class="bubble" id="bubble">나 눌러봐 👆</span>
+          <img class="px yul" id="yulImg" src="assets/yul-main.gif" alt="도트로 그린 킹율">
+        </div>
+        <div class="meter g9"><span>킹받음 지수</span><span class="bar"><i id="angerBar"></i></span><span id="angerPct">0%</span></div>
+        <div class="event-strip">
+          <span class="chip">📍 일산 킨텍스</span><span class="chip p">메가주 2026</span><span class="chip">유튜브 @킹율</span>
+        </div>
+      </div>
+    </div>
+    <div class="rules">
+      <div><img class="px" src="assets/i-floppy.png" alt="">퀘스트 5개<br>약 30초</div>
+      <div><img class="px" src="assets/gift-shake.gif" alt="">맞춤 선물<br>뽑기</div>
+      <div><img class="px" src="assets/i-stamp.png" alt="">교환권 보여주고<br>바로 수령</div>
+    </div>
+    <div class="nav"><button class="btn next" data-next>▶ <span class="blink g">PRESS START</span></button></div>
+  </section>
+
+  <!-- 1. 플레이어 등록 -->
+  <section class="screen" data-step="1">
+    <div><span class="stage-tag">STAGE 1 · 플레이어 등록</span>
+      <h2>선물 받을 사람<br>이름이 뭐야?</h2>
+      <p class="sub">교환권에 이름이랑 번호가 찍혀. 한 번호당 선물 1개!</p></div>
+    <div class="field"><label for="name">이름</label>
+      <input type="text" id="name" autocomplete="name" maxlength="20" placeholder="김율"></div>
+    <div class="field"><label for="phone">휴대폰 번호</label>
+      <input type="tel" id="phone" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></div>
+    <label class="chk"><input type="checkbox" id="age14"><span class="box"></span><span><span class="req">[필수]</span> 만 14세 이상이에요</span></label>
+    <p class="err" id="err1"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
+  </section>
+
+  <!-- 2. 파트너 선택 -->
+  <section class="screen" data-step="2">
+    <div><span class="stage-tag">STAGE 2 · 파트너 선택</span>
+      <h2>너의 파트너는<br>누구야?</h2>
+      <p class="sub">견종 알려주면 맞춤 선물 줄게 🦴</p></div>
+    <div class="picks" id="species">
+      <button type="button" class="pick" data-v="강아지" aria-pressed="false"><img class="px" src="assets/i-dog.png" alt="">강아지</button>
+      <button type="button" class="pick" data-v="고양이" aria-pressed="false"><img class="px" src="assets/i-cat.png" alt="">고양이</button>
+      <button type="button" class="pick" data-v="둘 다" aria-pressed="false"><img class="px" src="assets/i-paw.png" alt="">둘 다</button>
+      <button type="button" class="pick" data-v="예비 보호자" aria-pressed="false"><img class="px" src="assets/i-egg.png" alt="">예비 집사</button>
+    </div>
+    <div id="petFields">
+      <div class="field"><label for="petName">파트너 이름 <small>선택 · 교환권에 들어가</small></label>
+        <input type="text" id="petName" maxlength="12" placeholder="율이"></div>
+      <div class="row">
+        <div class="field"><label for="breed">견종·묘종</label>
+          <input type="text" id="breed" list="breeds" maxlength="20" placeholder="이탈리안 그레이하운드"></div>
+        <div class="field" style="flex:0 0 38%"><label for="petAge">나이</label>
+          <select id="petAge">
+            <option value="">선택</option>
+            <option>1살 미만</option><option>1~2살</option><option>3~4살</option><option>5~6살</option><option>7~9살</option><option>10살 이상</option>
+          </select></div>
+      </div>
+    </div>
+    <datalist id="breeds"></datalist>
+    <p class="err" id="err2"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
+  </section>
+
+  <!-- 3. 출신 맵 -->
+  <section class="screen" data-step="3">
+    <div><span class="stage-tag">STAGE 3 · 출신 맵</span>
+      <h2>어느 동네에서<br>왔어? <img class="px" src="assets/i-pin.png" alt="" style="width:27px;vertical-align:-4px"></h2>
+      <p class="sub">동네 산책 코스·병원 정보 보낼 때 써.</p></div>
+    <div class="field"><label for="sido">시·도</label><select id="sido"><option value="">선택</option></select></div>
+    <div class="field"><label for="sigungu">시·군·구</label><select id="sigungu" disabled><option value="">시·도를 먼저 골라줘</option></select></div>
+    <p class="err" id="err3"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
+  </section>
+
+  <!-- 4. 아이템 고르기 -->
+  <section class="screen" data-step="4">
+    <div><span class="stage-tag">STAGE 4 · 아이템 고르기</span>
+      <h2>요즘 제일 궁금한<br>아이템은?</h2>
+      <p class="sub">여러 개 골라도 돼! 고른 걸로 선물 박스가 정해져.</p></div>
+    <div class="items" id="topics">
+      <button type="button" class="item" data-v="보험" aria-pressed="false"><img class="px" src="assets/i-shield.png" alt="">보험</button>
+      <button type="button" class="item" data-v="훈련·행동" aria-pressed="false"><img class="px" src="assets/i-whistle.png" alt="">훈련·행동</button>
+      <button type="button" class="item" data-v="건강·병원" aria-pressed="false"><img class="px" src="assets/i-aid.png" alt="">건강·병원</button>
+      <button type="button" class="item" data-v="사료·간식" aria-pressed="false"><img class="px" src="assets/i-food.png" alt="">사료·간식</button>
+      <button type="button" class="item" data-v="미용" aria-pressed="false"><img class="px" src="assets/i-scissors.png" alt="">미용</button>
+      <button type="button" class="item" data-v="여행·호텔" aria-pressed="false"><img class="px" src="assets/i-bag.png" alt="">여행·호텔</button>
+      <button type="button" class="item" data-v="장난감·용품" aria-pressed="false"><img class="px" src="assets/i-ball.png" alt="">장난감·용품</button>
+      <button type="button" class="item" data-v="장례·추모" aria-pressed="false"><img class="px" src="assets/i-angel.png" alt="">장례·추모</button>
+    </div>
+    <p class="err" id="err4"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
+  </section>
+
+  <!-- 5. 킹율에게 한마디 -->
+  <section class="screen" data-step="5">
+    <div><span class="stage-tag">STAGE 5 · 킹율에게 한마디</span>
+      <h2>율이한테<br>한마디 남겨줘!</h2></div>
+    <div class="mic">
+      <img class="px" src="assets/yul-icon.png" alt="">
+      <p>웃긴 한마디는 <b>율이 언니(예빈)</b>가<br>인스타 스토리에 올려줄지도?! 📸<br><span style="font-weight:400">안 써도 선물은 받아. 건너뛰어도 OK</span></p>
+    </div>
+    <div class="field"><label for="msg">한마디 <small>40자</small></label>
+      <textarea id="msg" maxlength="40" placeholder="율아 나가 살지 마"></textarea>
+      <div class="count g9"><span id="msgCount">0</span>/40</div></div>
+    <div class="field"><label for="nick">스토리에 나갈 닉네임 <small>선택</small></label>
+      <input type="text" id="nick" maxlength="12" placeholder="율무 덕후"></div>
+    <label class="chk"><input type="checkbox" id="snsOk"><span class="box"></span><span><span class="opt">[선택]</span> 닉네임과 한마디를 킹율 SNS(인스타 스토리 등)에 공개해도 좋아요 <small style="color:var(--ink-2)">— 이름·번호는 절대 공개 안 돼요</small></span></label>
+    <p class="err" id="err5"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
+  </section>
+
+  <!-- 6. 동의 -->
+  <section class="screen" data-step="6">
+    <div><span class="stage-tag">LAST · 약속 도장</span>
+      <h2>마지막!<br>약속 도장 찍기</h2>
+      <p class="sub">필수만 체크해도 선물은 받아.</p></div>
+    <div class="consent">
+      <label class="chk all"><input type="checkbox" id="allOk"><span class="box"></span><span>아래 내용에 모두 동의해요</span></label>
+
+      <label class="chk"><input type="checkbox" id="privacyOk"><span class="box"></span><span><span class="req">[필수]</span> 개인정보 수집·이용 동의</span></label>
+      <details><summary>자세히 보기</summary>
+        <table>
+          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려동물 종류·이름·품종·나이, 거주 지역(시·군·구), 관심 주제</td></tr>
+          <tr><th>이용 목적</th><td>메가주 일산 현장 증정품 지급, 중복 수령 확인, 이벤트 문의 응대</td></tr>
+          <tr><th>보유 기간</th><td>행사 종료 후 3개월 뒤 파기 (아래 선택 동의 시 해당 목적 범위 내 보유)</td></tr>
+        </table>
+        <p style="margin-top:6px">동의를 거부할 수 있으나, 이 경우 증정품을 받을 수 없어요. 만 14세 미만은 참여할 수 없어요.</p>
+      </details>
+
+      <label class="chk"><input type="checkbox" id="mktOk"><span class="box"></span><span><span class="opt">[선택]</span> 마케팅 활용 및 광고성 정보 수신 동의</span></label>
+      <div class="sub-chks">
+        <label class="chk"><input type="checkbox" id="mktSms"><span class="box"></span><span>문자(SMS·MMS) 수신</span></label>
+        <label class="chk"><input type="checkbox" id="mktKakao"><span class="box"></span><span>카카오톡(채널 메시지·친구톡) 수신</span></label>
+      </div>
+      <details><summary>자세히 보기</summary>
+        <table>
+          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려동물 정보, 거주 지역, 관심 주제</td></tr>
+          <tr><th>이용 목적</th><td>킹율 채널의 이벤트·혜택 안내 및 반려동물 관련 제휴 상품·서비스 광고 정보 발송 (관심 주제에 맞춘 맞춤 발송)</td></tr>
+          <tr><th>수신 매체</th><td>위에서 체크한 매체로만 발송해요. 문자만 동의하면 카카오톡 광고는 보내지 않아요.</td></tr>
+          <tr><th>보유 기간</th><td>동의 철회 시 또는 수집일로부터 2년 중 먼저 오는 날까지</td></tr>
+          <tr><th>제3자 제공</th><td>없음. 정보는 킹율 채널만 보관하며 광고주에게 넘기지 않아요.</td></tr>
+        </table>
+        <p style="margin-top:6px">동의하지 않아도 증정품은 똑같이 받을 수 있어요. 광고 메시지에는 (광고) 표시와 무료 수신거부 방법이 들어가며, 밤 9시~아침 8시에는 보내지 않아요. 언제든 수신을 거부할 수 있어요.</p>
+      </details>
+    </div>
+    <div class="bonus"><img class="px" src="assets/i-star.png" alt=""><span id="bonusText">선택 동의하면 <u>킹율 굿즈 추첨</u>에 자동 응모!</span></div>
+    <p class="fine">개인정보 보호 책임: 킹율 채널 운영팀 · 문의는 행사 부스 또는 유튜브 @킹율 채널 정보를 통해 받아요.</p>
+    <p class="err" id="err6"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next yel" id="submitBtn" data-next>🎁 선물 받기</button></div>
+  </section>
+
+  <!-- 7. CLEAR -->
+  <section class="screen" data-step="7">
+    <div class="clear-title">STAGE CLEAR!</div>
+    <div class="dup" id="dupMsg">이미 선물 받은 번호야! 아래 교환권을 그대로 보여줘 🐾</div>
+    <div class="gacha" id="gacha" role="button" tabindex="0" aria-label="선물 상자 열기">
+      <img class="px" id="giftImg" src="assets/gift-shake.gif" alt="흔들리는 선물 상자">
+      <span class="hint blink">상자를 톡! 눌러봐</span>
+    </div>
+    <div class="ticket" id="ticket">
+      <div class="top g"><span>KINGYUL × MEGAZOO</span><span id="tCode">KY-0000</span></div>
+      <div class="main">
+        <img class="px" src="assets/yul-done.gif" alt="킹율">
+        <div>
+          <div class="box-name" id="tFor">율이 파트너 전용</div>
+          <div class="box-big" id="tBox">A 박스</div>
+          <div class="box-desc" id="tDesc">보험 관심 보호자 선물</div>
+        </div>
+      </div>
+      <div class="stamp">킹율<br>인증<br>🐾</div>
+      <div class="meta">
+        <div>플레이어<b id="tName">김율</b></div>
+        <div>지금 시각<b class="clock" id="tClock">00:00:00</b></div>
+      </div>
+    </div>
+    <div class="show-staff" id="staffMsg" hidden>👀 이 화면을 스태프에게 보여줘!</div>
+    <a class="btn yel" id="kakaoBtn" target="_blank" rel="noopener" hidden>💬 카카오톡 채널 추가하기</a>
+    <a class="btn sec" id="ytBtn" target="_blank" rel="noopener" hidden>▶ 유튜브 @킹율 구독하러 가기</a>
+  <button class="btn sec" id="resetBtn" type="button" hidden>↺ 처음부터 다시 해보기 (데모)</button>
+  </section>
+
+  <p class="foot">© 킹율 · 메가주 일산 현장 이벤트</p>
+</main>
+
+<script>
+/* ================== 설정 (여기만 고치면 돼요) ================== */
+const CONFIG = {
+  // Apps Script 웹앱 URL. 비워두면 DEMO 모드(이 기기에만 저장)
+  SCRIPT_URL: '',
+  KAKAO_CHANNEL_URL: '',               // 예: 'https://pf.kakao.com/_xxxxx' (비우면 버튼 숨김)
+  YOUTUBE_URL: 'https://www.youtube.com/@킹율',
+  CONSENT_VERSION: 'v1-2026-11-15',
+  EVENT: '메가주 일산 2026',
+  // 관심 주제 → 증정 박스. 위에서부터 먼저 걸리는 규칙 적용, 아무것도 안 걸리면 DEFAULT
+  BOX_RULES: [
+    { topic: '보험',     box: 'A', desc: '보험 관심 보호자 선물' },
+    { topic: '훈련·행동', box: 'B', desc: '훈련 꿀템 선물' },
+  ],
+  BOX_DEFAULT: { box: 'C', desc: '킹율 랜덤 선물' },
+  BONUS_TEXT: '선택 동의하면 <u>킹율 굿즈 추첨</u>에 자동 응모!',
+};
+/* ============================================================== */
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const LS = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+};
+const DEMO = !CONFIG.SCRIPT_URL;
+if (DEMO) $('#demoBar').hidden = false;
+$('#bonusText').innerHTML = CONFIG.BONUS_TEXT;
+
+/* ---------- 데이터: 품종 / 지역 ---------- */
+const DOGS = ['말티즈','푸들','토이푸들','포메라니안','비숑 프리제','치와와','시츄','요크셔테리어','닥스훈트','웰시코기','시바견','진돗개','골든 리트리버','래브라도 리트리버','보더콜리','프렌치 불독','퍼그','비글','슈나우저','이탈리안 그레이하운드','휘핏','그레이하운드','사모예드','허스키','말라뮤트','스피츠','파피용','미니핀','잭러셀테리어','베들링턴테리어','코카스파니엘','카발리에 킹찰스 스파니엘','셰틀랜드 쉽독','보스턴테리어','도베르만','풍산개','믹스견'];
+const CATS = ['코리안 숏헤어','러시안 블루','브리티시 숏헤어','스코티시 폴드','먼치킨','페르시안','랙돌','노르웨이숲','메인쿤','아비시니안','벵갈','샴','터키시 앙고라','엑조틱 숏헤어','스핑크스','아메리칸 숏헤어','믹스묘'];
+const REGIONS = {
+  '서울':'강남구,강동구,강북구,강서구,관악구,광진구,구로구,금천구,노원구,도봉구,동대문구,동작구,마포구,서대문구,서초구,성동구,성북구,송파구,양천구,영등포구,용산구,은평구,종로구,중구,중랑구',
+  '경기':'고양시 일산동구,고양시 일산서구,고양시 덕양구,파주시,김포시,수원시,성남시,용인시,부천시,안산시,안양시,남양주시,화성시,평택시,의정부시,시흥시,광명시,광주시,군포시,하남시,오산시,이천시,안성시,의왕시,양주시,구리시,포천시,동두천시,과천시,여주시,양평군,가평군,연천군',
+  '인천':'중구,동구,미추홀구,연수구,남동구,부평구,계양구,서구,강화군,옹진군',
+  '부산':'중구,서구,동구,영도구,부산진구,동래구,남구,북구,해운대구,사하구,금정구,강서구,연제구,수영구,사상구,기장군',
+  '대구':'중구,동구,서구,남구,북구,수성구,달서구,달성군,군위군',
+  '광주':'동구,서구,남구,북구,광산구',
+  '대전':'동구,중구,서구,유성구,대덕구',
+  '울산':'중구,남구,동구,북구,울주군',
+  '세종':'세종시',
+  '강원':'춘천시,원주시,강릉시,동해시,태백시,속초시,삼척시,홍천군,횡성군,영월군,평창군,정선군,철원군,화천군,양구군,인제군,고성군,양양군',
+  '충북':'청주시,충주시,제천시,보은군,옥천군,영동군,증평군,진천군,괴산군,음성군,단양군',
+  '충남':'천안시,공주시,보령시,아산시,서산시,논산시,계룡시,당진시,금산군,부여군,서천군,청양군,홍성군,예산군,태안군',
+  '전북':'전주시,군산시,익산시,정읍시,남원시,김제시,완주군,진안군,무주군,장수군,임실군,순창군,고창군,부안군',
+  '전남':'목포시,여수시,순천시,나주시,광양시,담양군,곡성군,구례군,고흥군,보성군,화순군,장흥군,강진군,해남군,영암군,무안군,함평군,영광군,장성군,완도군,진도군,신안군',
+  '경북':'포항시,경주시,김천시,안동시,구미시,영주시,영천시,상주시,문경시,경산시,의성군,청송군,영양군,영덕군,청도군,고령군,성주군,칠곡군,예천군,봉화군,울진군,울릉군',
+  '경남':'창원시,진주시,통영시,사천시,김해시,밀양시,거제시,양산시,의령군,함안군,창녕군,고성군,남해군,하동군,산청군,함양군,거창군,합천군',
+  '제주':'제주시,서귀포시',
+};
+const sido = $('#sido'), sigungu = $('#sigungu');
+Object.keys(REGIONS).forEach(k => sido.add(new Option(k, k)));
+sido.addEventListener('change', () => {
+  sigungu.innerHTML = '';
+  if (!sido.value) { sigungu.add(new Option('시·도를 먼저 골라줘','')); sigungu.disabled = true; return; }
+  sigungu.add(new Option('선택',''));
+  REGIONS[sido.value].split(',').forEach(v => sigungu.add(new Option(v, v)));
+  sigungu.disabled = false;
+});
+
+/* ---------- 상태 ---------- */
+const state = { step: 0, coins: 0, species: '', topics: new Set(), maxStep: 0 };
+const STAGES = 6; // 1~6 진행바
+
+function go(n) {
+  state.step = n;
+  $$('.screen').forEach(s => s.classList.toggle('on', +s.dataset.step === n));
+  const track = $('#track');
+  track.classList.toggle('hide', n === 0 || n === 7);
+  const pct = Math.min(1, (n - 1) / (STAGES - 1));
+  $('#runner').style.left = `calc(${pct} * (100% - 96px))`;
+  $('#stageLabel').textContent = n === 0 ? 'KINGYUL QUEST' : n === 7 ? 'ALL CLEAR' : n === 6 ? 'LAST STAGE' : `STAGE ${n}/5`;
+  window.scrollTo({ top: 0 });
+  const first = document.querySelector(`.screen[data-step="${n}"] input, .screen[data-step="${n}"] select`);
+  if (first && n !== 2 && n !== 6 && window.matchMedia('(hover:hover)').matches) first.focus({ preventScroll: true });
+}
+
+function reward(btn) {
+  if (state.step + 1 <= state.maxStep) return; // 이미 받은 보상은 다시 안 줌
+  state.maxStep = state.step + 1;
+  state.coins += 100;
+  $('#coins').textContent = String(state.coins).padStart(4, '0');
+  const r = btn.getBoundingClientRect();
+  const fx = document.createElement('div');
+  fx.className = 'fx'; fx.textContent = '+100';
+  fx.style.left = (r.left + r.width / 2 - 24) + 'px'; fx.style.top = (r.top - 10) + 'px';
+  document.body.appendChild(fx); setTimeout(() => fx.remove(), 950);
+  hearts(r.left + r.width / 2, r.top);
+}
+function hearts(x, y, n = 6) {
+  for (let i = 0; i < n; i++) {
+    const h = document.createElement('img');
+    h.src = 'assets/i-heart.png'; h.className = 'heart-fx px'; h.alt = '';
+    h.style.left = x + 'px'; h.style.top = y + 'px';
+    h.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px');
+    h.style.setProperty('--dy', (-40 - Math.random() * 90) + 'px');
+    document.body.appendChild(h); setTimeout(() => h.remove(), 850);
+  }
+}
+
+/* ---------- 입력 보조 ---------- */
+const phone = $('#phone');
+phone.addEventListener('input', () => {
+  const d = phone.value.replace(/\D/g, '').slice(0, 11);
+  phone.value = d.length < 4 ? d : d.length < 8 ? `${d.slice(0,3)}-${d.slice(3)}` : `${d.slice(0,3)}-${d.slice(3,7)}-${d.slice(7)}`;
+});
+const breedList = $('#breeds');
+function fillBreeds(list) { breedList.innerHTML = list.map(b => `<option value="${b}">`).join(''); }
+fillBreeds(DOGS.concat(CATS));
+
+$$('#species .pick').forEach(b => b.addEventListener('click', () => {
+  $$('#species .pick').forEach(x => x.setAttribute('aria-pressed', x === b));
+  state.species = b.dataset.v;
+  const pre = state.species === '예비 보호자';
+  $('#petFields').style.display = pre ? 'none' : '';
+  fillBreeds(state.species === '강아지' ? DOGS : state.species === '고양이' ? CATS : DOGS.concat(CATS));
+  $('#breed').placeholder = state.species === '고양이' ? '코리안 숏헤어' : '이탈리안 그레이하운드';
+}));
+$$('#topics .item').forEach(b => b.addEventListener('click', () => {
+  const on = b.getAttribute('aria-pressed') !== 'true';
+  b.setAttribute('aria-pressed', on);
+  on ? state.topics.add(b.dataset.v) : state.topics.delete(b.dataset.v);
+  if (on) { const r = b.getBoundingClientRect(); hearts(r.left + r.width / 2, r.top + 10, 3); }
+}));
+
+const msg = $('#msg');
+const SAMPLES = ['율아 나가 살지 마', '소맥은 적당히 마셔라 율무야', '우웰뤨뤨뤠뤡 따라하다 목 쉼', '율이 엉덩이 팡팡 실물 영접함', '킹받는 거 나만 귀엽냐'];
+let si = 0;
+setInterval(() => { if (!msg.value) msg.placeholder = SAMPLES[++si % SAMPLES.length]; }, 2200);
+msg.addEventListener('input', () => { $('#msgCount').textContent = msg.value.length; });
+
+// 동의 체크 연동
+const allOk = $('#allOk'), privacyOk = $('#privacyOk'), mktOk = $('#mktOk'), mktSms = $('#mktSms'), mktKakao = $('#mktKakao');
+function syncAll() { allOk.checked = privacyOk.checked && mktSms.checked && mktKakao.checked; }
+allOk.addEventListener('change', () => { [privacyOk, mktOk, mktSms, mktKakao].forEach(c => c.checked = allOk.checked); });
+mktOk.addEventListener('change', () => { mktSms.checked = mktKakao.checked = mktOk.checked; syncAll(); });
+[mktSms, mktKakao].forEach(c => c.addEventListener('change', () => { mktOk.checked = mktSms.checked || mktKakao.checked; syncAll(); }));
+privacyOk.addEventListener('change', syncAll);
+
+/* ---------- 이스터에그: 나가 살아! ---------- */
+let anger = 0, angerTimer;
+const yulImg = $('#yulImg'), bubble = $('#bubble');
+function poke() {
+  anger = Math.min(100, anger + 7 + Math.floor(Math.random() * 7));
+  $('#angerBar').style.width = anger + '%';
+  $('#angerPct').textContent = anger + '%';
+  yulImg.src = 'assets/yul-angry.gif';
+  bubble.classList.add('hot');
+  const lines = ['나가 살아!', '우웰뤨뤨뤠뤡!!', '킹받네 진짜', '왈왈왈왈왈!!', '이불 다 뜯는다'];
+  bubble.textContent = anger >= 100 ? '킹받음 MAX! 율이 가출함 🏃' : lines[Math.floor(Math.random() * lines.length)];
+  const r = yulImg.getBoundingClientRect(); hearts(r.left + r.width / 2, r.top + 60, 3);
+  clearTimeout(angerTimer);
+  angerTimer = setTimeout(() => { yulImg.src = 'assets/yul-main.gif'; bubble.classList.remove('hot'); bubble.textContent = anger >= 100 ? '…미안해 사랑해 💜' : '또 해봐 😤'; }, 1300);
+}
+$('#yulTap').addEventListener('click', poke);
+$('#yulTap').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); poke(); } });
+
+/* ---------- 검증 ---------- */
+function fail(step, text, el) {
+  $('#err' + step).textContent = text;
+  if (el) { el.classList.remove('invalid'); void el.offsetWidth; el.classList.add('invalid'); el.focus?.({ preventScroll: false }); }
+  return false;
+}
+function validate(step) {
+  const e = $('#err' + step); if (e) e.textContent = '';
+  $$('.invalid').forEach(x => x.classList.remove('invalid'));
+  if (step === 1) {
+    if ($('#name').value.trim().length < 2) return fail(1, '이름을 알려줘!', $('#name'));
+    if (!/^01[016789]-?\d{3,4}-?\d{4}$/.test(phone.value)) return fail(1, '휴대폰 번호를 다시 확인해줘', phone);
+    if (!$('#age14').checked) return fail(1, '만 14세 이상만 참여할 수 있어');
+  }
+  if (step === 2) {
+    if (!state.species) return fail(2, '파트너를 골라줘!');
+    if (state.species !== '예비 보호자') {
+      if (!$('#breed').value.trim()) return fail(2, '견종·묘종을 알려줘 (모르면 "믹스")', $('#breed'));
+      if (!$('#petAge').value) return fail(2, '나이를 골라줘', $('#petAge'));
+    }
+  }
+  if (step === 3) {
+    if (!sido.value) return fail(3, '시·도를 골라줘', sido);
+    if (!sigungu.value) return fail(3, '시·군·구를 골라줘', sigungu);
+  }
+  if (step === 4 && !state.topics.size) return fail(4, '아이템을 하나 이상 골라줘!');
+  if (step === 5 && $('#snsOk').checked && !msg.value.trim()) return fail(5, '공개 동의했으면 한마디도 써줘!', msg);
+  if (step === 6 && !privacyOk.checked) return fail(6, '[필수] 개인정보 수집·이용에 동의해야 선물을 줄 수 있어');
+  return true;
+}
+
+$$('[data-next]').forEach(b => b.addEventListener('click', () => {
+  const s = state.step;
+  if (s > 0 && !validate(s)) return;
+  if (s === 6) return submit(b);
+  reward(b);
+  go(s + 1);
+}));
+$$('[data-back]').forEach(b => b.addEventListener('click', () => go(Math.max(0, state.step - 1))));
+
+/* ---------- 박스 결정 ---------- */
+function pickBox(topics) {
+  for (const r of CONFIG.BOX_RULES) if (topics.includes(r.topic)) return r;
+  return CONFIG.BOX_DEFAULT;
+}
+
+/* ---------- 제출 ---------- */
+const digits = () => phone.value.replace(/\D/g, '');
+function payload() {
+  const topics = [...state.topics];
+  const box = pickBox(topics);
+  const now = new Date().toISOString();
+  const pre = state.species === '예비 보호자';
+  return {
+    event: CONFIG.EVENT, consentVersion: CONFIG.CONSENT_VERSION, clientTime: now,
+    name: $('#name').value.trim(), phone: digits(), age14: $('#age14').checked,
+    species: state.species, petName: pre ? '' : $('#petName').value.trim(),
+    breed: pre ? '' : $('#breed').value.trim(), petAge: pre ? '' : $('#petAge').value,
+    sido: sido.value, sigungu: sigungu.value, topics,
+    message: msg.value.trim(), nick: $('#nick').value.trim(), snsOk: $('#snsOk').checked,
+    privacyOk: privacyOk.checked, mktSms: mktSms.checked, mktKakao: mktKakao.checked,
+    box: box.box, boxDesc: box.desc,
+  };
+}
+function localCode() { return 'KY-' + String(Math.floor(1000 + Math.random() * 9000)); }
+
+async function post(data) {
+  const res = await fetch(CONFIG.SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) });
+  return res.json();
+}
+// 현장 와이파이가 끊겼을 때를 위한 재전송 큐
+async function flushQueue() {
+  if (DEMO) return;
+  const q = LS.get('ky_queue') || [];
+  if (!q.length) return;
+  const left = [];
+  for (const item of q) { try { await post(item); } catch (e) { left.push(item); } }
+  LS.set('ky_queue', left);
+}
+window.addEventListener('online', flushQueue);
+flushQueue();
+
+async function submit(btn) {
+  btn.disabled = true; btn.textContent = '⏳ 저장 중…';
+  const data = payload();
+  const claimed = LS.get('ky_claimed') || {};
+  let result;
+  if (claimed[data.phone]) {
+    result = { ok: true, duplicate: true, ...claimed[data.phone] };
+  } else if (DEMO) {
+    result = { ok: true, duplicate: false, code: localCode(), box: data.box, boxDesc: data.boxDesc, name: data.name, petName: data.petName };
+    const rows = LS.get('ky_demo_rows') || []; rows.push({ ...data, code: result.code }); LS.set('ky_demo_rows', rows);
+    console.log('[DEMO] 저장된 응답', data);
+  } else {
+    try {
+      result = await post(data);
+      if (!result.ok) throw new Error(result.error || 'server');
+    } catch (e) {
+      // 네트워크 실패: 큐에 넣고 임시 교환권 발급
+      const q = LS.get('ky_queue') || []; data.offlineCode = localCode(); q.push(data); LS.set('ky_queue', q);
+      result = { ok: true, duplicate: false, code: data.offlineCode, box: data.box, boxDesc: data.boxDesc, name: data.name, petName: data.petName, offline: true };
+    }
+  }
+  if (!result.duplicate) {
+    claimed[data.phone] = { code: result.code, box: result.box, boxDesc: result.boxDesc, name: result.name || data.name, petName: result.petName ?? data.petName };
+    LS.set('ky_claimed', claimed);
+  }
+  state.coins += 500; $('#coins').textContent = String(state.coins).padStart(4, '0');
+  showClear(result, data);
+  btn.disabled = false; btn.textContent = '🎁 선물 받기';
+}
+
+/* ---------- CLEAR 연출 ---------- */
+function showClear(r, data) {
+  go(7);
+  $('#dupMsg').classList.toggle('on', !!r.duplicate);
+  $('#tCode').textContent = r.code;
+  $('#tName').textContent = r.name || data.name;
+  const pet = r.petName ?? data.petName;
+  $('#tFor').textContent = pet ? `${pet} 파트너 전용` : '킹율이 고른 선물';
+  $('#tBox').textContent = `${r.box} 박스`;
+  $('#tDesc').textContent = r.boxDesc || '';
+  const gacha = $('#gacha'), gift = $('#giftImg'), ticket = $('#ticket');
+  ticket.classList.remove('on'); gacha.style.display = ''; gift.src = 'assets/gift-shake.gif';
+  ['#staffMsg', '#kakaoBtn', '#ytBtn'].forEach(s => $(s).hidden = true);
+  let opened = false;
+  const open = () => {
+    if (opened) return; opened = true;
+    gift.src = 'assets/gift-open.gif';
+    const rc = gift.getBoundingClientRect(); hearts(rc.left + rc.width / 2, rc.top + 40, 12);
+    setTimeout(() => {
+      gacha.style.display = 'none';
+      ticket.classList.add('on');
+      $('#staffMsg').hidden = false;
+      if (CONFIG.KAKAO_CHANNEL_URL) { $('#kakaoBtn').href = CONFIG.KAKAO_CHANNEL_URL; $('#kakaoBtn').hidden = false; }
+      if (CONFIG.YOUTUBE_URL) { $('#ytBtn').href = CONFIG.YOUTUBE_URL; $('#ytBtn').hidden = false; }
+      if (DEMO) $('#resetBtn').hidden = false;
+    }, 900);
+  };
+  gacha.onclick = open;
+  gacha.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
+  setTimeout(open, 3500); // 안 눌러도 자동 오픈
+}
+// 데모: 기록 지우고 처음부터 (팀 시연용)
+$('#resetBtn').addEventListener('click', () => {
+  try { localStorage.removeItem('ky_claimed'); } catch (e) {}
+  location.href = location.pathname;
+});
+// 실시간 시계 (스크린샷 재사용 방지)
+setInterval(() => {
+  const d = new Date();
+  $('#tClock').textContent = [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
+}, 250);
+</script>
+</body>
+</html>
