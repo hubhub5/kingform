@@ -158,6 +158,23 @@ textarea{resize:none;height:84px;line-height:1.45}
 .item[aria-pressed=true]::after{content:'✔';position:absolute;top:2px;right:4px;font-size:12px;color:var(--pink)}
 @keyframes twinkle{50%{filter:brightness(1.25)}}
 
+/* 선택 칩 (한 번 탭) */
+.q{margin-top:14px}
+.q .lbl{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+.chips.g2>.c{flex:1 1 calc(50% - 7px)}
+.c{
+  flex:1 1 auto;
+  font:inherit;letter-spacing:-0.07em;cursor:pointer;background:#fff;color:var(--ink);
+  border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);
+  padding:9px 11px;font-size:14px;font-weight:800;line-height:1.2;
+}
+.c[aria-pressed=true]{background:var(--yellow);transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.chips[data-multi] .c[aria-pressed=true]{background:var(--pink-2)}
+.chips[data-multi] .c[aria-pressed=true]::before{content:'✔ ';color:var(--pink)}
+.chips.invalid{animation:shake .3s steps(3)}
+.chips.invalid .c{border-color:var(--red)}
+
 /* ---------- 버튼 ---------- */
 .btn{
   font:inherit;letter-spacing:-0.07em;cursor:pointer;
@@ -311,7 +328,7 @@ textarea{resize:none;height:84px;line-height:1.45}
       </div>
     </div>
     <div class="rules">
-      <div><img class="px" src="assets/i-floppy.png" alt="">퀘스트 5개<br>약 30초</div>
+      <div><img class="px" src="assets/i-floppy.png" alt="">탭탭 퀘스트<br>약 1분</div>
       <div><img class="px" src="assets/gift-shake.gif" alt="">맞춤 선물<br>뽑기</div>
       <div><img class="px" src="assets/i-stamp.png" alt="">교환권 보여주고<br>바로 수령</div>
     </div>
@@ -327,30 +344,34 @@ textarea{resize:none;height:84px;line-height:1.45}
       <input type="text" id="name" autocomplete="name" maxlength="20" placeholder="김율"></div>
     <div class="field"><label for="phone">휴대폰 번호</label>
       <input type="tel" id="phone" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000"></div>
+    <div class="q"><span class="lbl">플레이어 레벨 <small>나이대</small></span>
+      <div class="chips" data-q="ownerAge" data-opts="10대|20대|30대|40대|50대 이상"></div></div>
     <label class="chk"><input type="checkbox" id="age14"><span class="box"></span><span><span class="req">[필수]</span> 만 14세 이상이에요</span></label>
     <p class="err" id="err1"></p>
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
   </section>
 
-  <!-- 2. 우리 강아지 소개 -->
+  <!-- 2. 파트너 소개 -->
   <section class="screen" data-step="2">
     <div><span class="stage-tag">STAGE 2 · 파트너 소개</span>
       <h2>너의 강아지를<br>소개해줘! <img class="px" src="assets/i-dog.png" alt="" style="width:39px;vertical-align:-4px"></h2>
-      <p class="sub">견종 알려주면 맞춤 선물 줄게 🦴</p></div>
-    <div id="petFields">
-      <div class="field"><label for="petName">강아지 이름 <small>선택 · 교환권에 들어가</small></label>
-        <input type="text" id="petName" maxlength="12" placeholder="율이"></div>
-      <div class="row">
-        <div class="field"><label for="breed">견종</label>
-          <input type="text" id="breed" list="breeds" maxlength="20" placeholder="이탈리안 그레이하운드"></div>
-        <div class="field" style="flex:0 0 38%"><label for="petAge">나이</label>
-          <select id="petAge">
-            <option value="">선택</option>
-            <option>1살 미만</option><option>1~2살</option><option>3~4살</option><option>5~6살</option><option>7~9살</option><option>10살 이상</option>
-          </select></div>
-      </div>
+      <p class="sub">견종·체급 알려주면 맞춤 선물 줄게 🦴</p></div>
+    <div class="field"><label for="petName">강아지 이름 <small>선택 · 교환권에 들어가</small></label>
+      <input type="text" id="petName" maxlength="12" placeholder="율이"></div>
+    <div class="row">
+      <div class="field"><label for="breed">견종</label>
+        <input type="text" id="breed" list="breeds" maxlength="20" placeholder="이탈리안 그레이하운드"></div>
+      <div class="field" style="flex:0 0 38%"><label for="petAge">나이</label>
+        <select id="petAge">
+          <option value="">선택</option>
+          <option>1살 미만</option><option>1~2살</option><option>3~4살</option><option>5~6살</option><option>7~9살</option><option>10살 이상</option>
+        </select></div>
     </div>
     <datalist id="breeds"></datalist>
+    <div class="q"><span class="lbl">체급 <small>몸무게</small></span>
+      <div class="chips" data-q="weight" data-opts="3kg 미만|3~7kg|7~15kg|15~25kg|25kg 이상"></div></div>
+    <div class="q"><span class="lbl">성별 · 중성화</span>
+      <div class="chips g2" data-q="sexNeuter" data-opts="남아·중성화O|남아·중성화X|여아·중성화O|여아·중성화X"></div></div>
     <p class="err" id="err2"></p>
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
   </section>
@@ -358,17 +379,51 @@ textarea{resize:none;height:84px;line-height:1.45}
   <!-- 3. 출신 맵 -->
   <section class="screen" data-step="3">
     <div><span class="stage-tag">STAGE 3 · 출신 맵</span>
-      <h2>어느 동네에서<br>왔어? <img class="px" src="assets/i-pin.png" alt="" style="width:27px;vertical-align:-4px"></h2>
+      <h2>어느 동네,<br>어떤 집에 살아? <img class="px" src="assets/i-pin.png" alt="" style="width:27px;vertical-align:-4px"></h2>
       <p class="sub">동네 산책 코스·병원 정보 보낼 때 써.</p></div>
-    <div class="field"><label for="sido">시·도</label><select id="sido"><option value="">선택</option></select></div>
-    <div class="field"><label for="sigungu">시·군·구</label><select id="sigungu" disabled><option value="">시·도를 먼저 골라줘</option></select></div>
+    <div class="row">
+      <div class="field" style="flex:0 0 38%"><label for="sido">시·도</label><select id="sido"><option value="">선택</option></select></div>
+      <div class="field"><label for="sigungu">시·군·구</label><select id="sigungu" disabled><option value="">시·도 먼저</option></select></div>
+    </div>
+    <div class="q"><span class="lbl">우리 집 맵</span>
+      <div class="chips" data-q="housing" data-opts="아파트|빌라·오피스텔|주택·마당"></div></div>
+    <div class="q"><span class="lbl">파티원 수 <small>같이 사는 강아지</small></span>
+      <div class="chips" data-q="dogCount" data-opts="1마리|2마리|3마리 이상"></div></div>
     <p class="err" id="err3"></p>
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
   </section>
 
-  <!-- 4. 아이템 고르기 -->
+  <!-- 4. 데일리 루틴 -->
   <section class="screen" data-step="4">
-    <div><span class="stage-tag">STAGE 4 · 아이템 고르기</span>
+    <div><span class="stage-tag">STAGE 4 · 데일리 루틴</span>
+      <h2>너네 강아지<br>하루는 어때? <img class="px" src="assets/i-bone.png" alt="" style="width:40px;vertical-align:-2px"></h2>
+      <p class="sub">탭탭탭 세 번이면 끝!</p></div>
+    <div class="q"><span class="lbl">산책 퀘스트</span>
+      <div class="chips" data-q="walk" data-opts="거의 안 해|하루 1번|하루 2번 이상"></div></div>
+    <div class="q"><span class="lbl">평일 낮에 혼자 집 지키는 시간</span>
+      <div class="chips g2" data-q="alone" data-opts="거의 없어|4시간 미만|4~8시간|8시간 이상"></div></div>
+    <div class="q"><span class="lbl">주로 먹는 밥</span>
+      <div class="chips g2" data-q="food" data-opts="건사료|습식·화식|생식·동결건조|수제·섞어서"></div></div>
+    <p class="err" id="err4"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
+  </section>
+
+  <!-- 5. HP 체크 -->
+  <section class="screen" data-step="5">
+    <div><span class="stage-tag">STAGE 5 · HP 체크</span>
+      <h2>요즘 신경 쓰이는<br>상태이상 있어? <img class="px" src="assets/i-aid.png" alt="" style="width:33px;vertical-align:-3px"></h2>
+      <p class="sub">여러 개 골라도 돼. 없으면 ‘없어 튼튼해’!</p></div>
+    <div class="q">
+      <div class="chips" data-q="health" data-multi data-none="없어 튼튼해" data-opts="피부·알러지|관절·슬개골|치아·입냄새|눈물·눈|소화·장|체중·비만|짖음·분리불안|노견 케어|없어 튼튼해"></div></div>
+    <div class="q"><span class="lbl">방어구 장착 <small>펫보험</small></span>
+      <div class="chips" data-q="insurance" data-opts="가입했어|알아보는 중|아직 생각 없어"></div></div>
+    <p class="err" id="err5"></p>
+    <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
+  </section>
+
+  <!-- 6. 아이템 고르기 -->
+  <section class="screen" data-step="6">
+    <div><span class="stage-tag">STAGE 6 · 아이템 상점</span>
       <h2>요즘 제일 궁금한<br>아이템은?</h2>
       <p class="sub">여러 개 골라도 돼! 고른 걸로 선물 박스가 정해져.</p></div>
     <div class="items" id="topics">
@@ -381,13 +436,17 @@ textarea{resize:none;height:84px;line-height:1.45}
       <button type="button" class="item" data-v="장난감·용품" aria-pressed="false"><img class="px" src="assets/i-ball.png" alt="">장난감·용품</button>
       <button type="button" class="item" data-v="장례·추모" aria-pressed="false"><img class="px" src="assets/i-angel.png" alt="">장례·추모</button>
     </div>
-    <p class="err" id="err4"></p>
+    <div class="q"><span class="lbl">한 달 골드 사용량 <small>병원비 빼고 사료·간식·용품</small></span>
+      <div class="chips" data-q="spend" data-opts="5만 원 미만|5~10만 원|10~20만 원|20~30만 원|30만 원 이상"></div></div>
+    <div class="q"><span class="lbl">주로 아이템 사는 곳 <small>여러 개 OK</small></span>
+      <div class="chips" data-q="channels" data-multi data-opts="쿠팡·종합몰|네이버쇼핑|펫 전문몰|브랜드 공식몰|동물병원|동네 펫샵"></div></div>
+    <p class="err" id="err6"></p>
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
   </section>
 
-  <!-- 5. 킹율에게 한마디 -->
-  <section class="screen" data-step="5">
-    <div><span class="stage-tag">STAGE 5 · 킹율에게 한마디</span>
+  <!-- 7. 킹율에게 한마디 -->
+  <section class="screen" data-step="7">
+    <div><span class="stage-tag">STAGE 7 · 킹율에게 한마디</span>
       <h2>율이한테<br>한마디 남겨줘!</h2></div>
     <div class="mic">
       <img class="px" src="assets/yul-icon.png" alt="">
@@ -399,12 +458,12 @@ textarea{resize:none;height:84px;line-height:1.45}
     <div class="field"><label for="nick">스토리에 나갈 닉네임 <small>선택</small></label>
       <input type="text" id="nick" maxlength="12" placeholder="율무 덕후"></div>
     <label class="chk"><input type="checkbox" id="snsOk"><span class="box"></span><span><span class="opt">[선택]</span> 닉네임과 한마디를 킹율 SNS(인스타 스토리 등)에 공개해도 좋아요 <small style="color:var(--ink-2)">— 이름·번호는 절대 공개 안 돼요</small></span></label>
-    <p class="err" id="err5"></p>
+    <p class="err" id="err7"></p>
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next" data-next>다음 ▶</button></div>
   </section>
 
-  <!-- 6. 동의 -->
-  <section class="screen" data-step="6">
+  <!-- 8. 동의 -->
+  <section class="screen" data-step="8">
     <div><span class="stage-tag">LAST · 약속 도장</span>
       <h2>마지막!<br>약속 도장 찍기</h2>
       <p class="sub">필수만 체크해도 선물은 받아.</p></div>
@@ -415,8 +474,8 @@ textarea{resize:none;height:84px;line-height:1.45}
       <label class="chk"><input type="checkbox" id="privacyOk"><span class="box"></span><span><span class="req">[필수]</span> 개인정보 수집·이용 동의</span></label>
       <details><summary>자세히 보기</summary>
         <table>
-          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려견 이름·견종·나이, 거주 지역(시·군·구), 관심 주제</td></tr>
-          <tr><th>이용 목적</th><td>메가주 일산 현장 증정품 지급, 중복 수령 확인, 이벤트 문의 응대</td></tr>
+          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 보호자 나이대, 거주 지역(시·군·구)·주거 형태, 반려견 정보(이름·견종·나이·몸무게·성별·중성화·마릿수·산책·혼자 있는 시간·주식·건강 고민·펫보험 가입 여부), 관심 주제, 월 지출 규모, 주 구매처</td></tr>
+          <tr><th>이용 목적</th><td>메가주 일산 현장 증정품 지급, 중복 수령 확인, 이벤트 문의 응대, 개인을 알아볼 수 없는 통계 작성</td></tr>
           <tr><th>보유 기간</th><td>행사 종료 후 3개월 뒤 파기 (아래 선택 동의 시 해당 목적 범위 내 보유)</td></tr>
         </table>
         <p style="margin-top:6px">동의를 거부할 수 있으나, 이 경우 증정품을 받을 수 없어요. 만 14세 미만은 참여할 수 없어요.</p>
@@ -431,7 +490,7 @@ textarea{resize:none;height:84px;line-height:1.45}
       </div>
       <details><summary>자세히 보기</summary>
         <table>
-          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 반려견 정보, 거주 지역, 관심 주제</td></tr>
+          <tr><th>수집 항목</th><td>이름, 휴대폰 번호, 보호자 나이대, 거주 지역·주거 형태, 반려견 정보, 관심 주제, 월 지출 규모, 주 구매처</td></tr>
           <tr><th>이용 목적</th><td>킹율 채널의 이벤트·혜택 안내 및 반려동물 관련 제휴 상품·서비스 광고 정보 발송 (관심 주제에 맞춘 맞춤 발송)</td></tr>
           <tr><th>수신 매체</th><td>위에서 체크한 매체로만 발송해요. 문자만 동의하면 카카오톡 광고는 보내지 않아요.</td></tr>
           <tr><th>보유 기간</th><td>동의 철회 시 또는 수집일로부터 2년 중 먼저 오는 날까지</td></tr>
@@ -443,12 +502,12 @@ textarea{resize:none;height:84px;line-height:1.45}
     </div>
     <div class="bonus"><img class="px" src="assets/i-star.png" alt=""><span id="bonusText">선택 동의하면 <u>킹율 굿즈 추첨</u>에 자동 응모!</span></div>
     <p class="fine">개인정보 보호 책임: 킹율 채널 운영팀 · 문의는 행사 부스 또는 유튜브 @킹율 채널 정보를 통해 받아요.</p>
-    <p class="err" id="err6"></p>
+    <p class="err" id="err8"></p>
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next yel" id="submitBtn" data-next>🎁 선물 받기</button></div>
   </section>
 
-  <!-- 7. CLEAR -->
-  <section class="screen" data-step="7">
+  <!-- 9. CLEAR -->
+  <section class="screen" data-step="9">
     <div class="clear-title">STAGE CLEAR!</div>
     <div class="dup" id="dupMsg">이미 선물 받은 번호야! 아래 교환권을 그대로 보여줘 🐾</div>
     <div class="gacha" id="gacha" role="button" tabindex="0" aria-label="선물 상자 열기">
@@ -484,10 +543,10 @@ textarea{resize:none;height:84px;line-height:1.45}
 /* ================== 설정 (여기만 고치면 돼요) ================== */
 const CONFIG = {
   // Apps Script 웹앱 URL. 비워두면 DEMO 모드(이 기기에만 저장)
-  SCRIPT_URL: '',
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbx0iDOBFvph_wjYQISXJSDPSUvBH1LlpDgmIYUF6ieY_wQRN0TqTB87eVtUcWwpCWK1/exec',
   KAKAO_CHANNEL_URL: '',               // 예: 'https://pf.kakao.com/_xxxxx' (비우면 버튼 숨김)
   YOUTUBE_URL: 'https://www.youtube.com/@킹율',
-  CONSENT_VERSION: 'v1-2026-11-15',
+  CONSENT_VERSION: 'v2-2026-11-20',
   EVENT: '메가주 일산 2026',
   // 관심 주제 → 증정 박스. 위에서부터 먼저 걸리는 규칙 적용, 아무것도 안 걸리면 DEFAULT
   BOX_RULES: [
@@ -534,27 +593,27 @@ const sido = $('#sido'), sigungu = $('#sigungu');
 Object.keys(REGIONS).forEach(k => sido.add(new Option(k, k)));
 sido.addEventListener('change', () => {
   sigungu.innerHTML = '';
-  if (!sido.value) { sigungu.add(new Option('시·도를 먼저 골라줘','')); sigungu.disabled = true; return; }
+  if (!sido.value) { sigungu.add(new Option('시·도 먼저','')); sigungu.disabled = true; return; }
   sigungu.add(new Option('선택',''));
   REGIONS[sido.value].split(',').forEach(v => sigungu.add(new Option(v, v)));
   sigungu.disabled = false;
 });
 
 /* ---------- 상태 ---------- */
-const state = { step: 0, coins: 0, topics: new Set(), maxStep: 0 };
-const STAGES = 6; // 1~6 진행바
+const state = { step: 0, coins: 0, topics: new Set(), maxStep: 0, a: {} };
+const LAST = 8, CLEAR = 9; // 1~7 스테이지, 8 동의, 9 교환권
 
 function go(n) {
   state.step = n;
   $$('.screen').forEach(s => s.classList.toggle('on', +s.dataset.step === n));
   const track = $('#track');
-  track.classList.toggle('hide', n === 0 || n === 7);
-  const pct = Math.min(1, (n - 1) / (STAGES - 1));
+  track.classList.toggle('hide', n === 0 || n === CLEAR);
+  const pct = Math.min(1, (n - 1) / (LAST - 1));
   $('#runner').style.left = `calc(${pct} * (100% - 96px))`;
-  $('#stageLabel').textContent = n === 0 ? 'KINGYUL QUEST' : n === 7 ? 'ALL CLEAR' : n === 6 ? 'LAST STAGE' : `STAGE ${n}/5`;
+  $('#stageLabel').textContent = n === 0 ? 'KINGYUL QUEST' : n === CLEAR ? 'ALL CLEAR' : n === LAST ? 'LAST STAGE' : `STAGE ${n}/${LAST - 1}`;
   window.scrollTo({ top: 0 });
   const first = document.querySelector(`.screen[data-step="${n}"] input, .screen[data-step="${n}"] select`);
-  if (first && n !== 2 && n !== 6 && window.matchMedia('(hover:hover)').matches) first.focus({ preventScroll: true });
+  if (first && n === 1 && window.matchMedia('(hover:hover)').matches) first.focus({ preventScroll: true });
 }
 
 function reward(btn) {
@@ -589,6 +648,38 @@ phone.addEventListener('input', () => {
 const breedList = $('#breeds');
 function fillBreeds(list) { breedList.innerHTML = list.map(b => `<option value="${b}">`).join(''); }
 fillBreeds(DOGS);
+
+// 선택 칩: data-opts 로 버튼 생성, data-multi 면 여러 개, data-none 은 단독 선택
+$$('.chips').forEach(box => {
+  const q = box.dataset.q, multi = 'multi' in box.dataset, none = box.dataset.none;
+  state.a[q] = multi ? [] : '';
+  box.setAttribute('role', 'group');
+  box.dataset.opts.split('|').forEach(v => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'c'; b.textContent = v; b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', () => {
+      box.classList.remove('invalid');
+      const btns = [...box.children];
+      if (!multi) {
+        btns.forEach(x => x.setAttribute('aria-pressed', x === b));
+        state.a[q] = v;
+      } else {
+        const on = b.getAttribute('aria-pressed') !== 'true';
+        b.setAttribute('aria-pressed', on);
+        if (on && none) btns.forEach(x => { if (x !== b && (v === none || x.textContent === none)) x.setAttribute('aria-pressed', 'false'); });
+        state.a[q] = btns.filter(x => x.getAttribute('aria-pressed') === 'true').map(x => x.textContent);
+      }
+      if (b.getAttribute('aria-pressed') === 'true') { const r = b.getBoundingClientRect(); hearts(r.left + r.width / 2, r.top + 6, 2); }
+    });
+    box.appendChild(b);
+  });
+});
+const ans = q => state.a[q];
+const need = (step, q, text) => {
+  const v = ans(q);
+  if (Array.isArray(v) ? v.length : v) return true;
+  return fail(step, text, document.querySelector(`.chips[data-q="${q}"]`));
+};
 
 $$('#topics .item').forEach(b => b.addEventListener('click', () => {
   const on = b.getAttribute('aria-pressed') !== 'true';
@@ -641,26 +732,44 @@ function validate(step) {
   if (step === 1) {
     if ($('#name').value.trim().length < 2) return fail(1, '이름을 알려줘!', $('#name'));
     if (!/^01[016789]-?\d{3,4}-?\d{4}$/.test(phone.value)) return fail(1, '휴대폰 번호를 다시 확인해줘', phone);
+    if (!need(1, 'ownerAge', '나이대를 골라줘')) return false;
     if (!$('#age14').checked) return fail(1, '만 14세 이상만 참여할 수 있어');
   }
   if (step === 2) {
     if (!$('#breed').value.trim()) return fail(2, '견종을 알려줘 (모르면 "믹스견")', $('#breed'));
     if (!$('#petAge').value) return fail(2, '나이를 골라줘', $('#petAge'));
+    if (!need(2, 'weight', '몸무게를 골라줘')) return false;
+    if (!need(2, 'sexNeuter', '성별·중성화를 골라줘')) return false;
   }
   if (step === 3) {
     if (!sido.value) return fail(3, '시·도를 골라줘', sido);
     if (!sigungu.value) return fail(3, '시·군·구를 골라줘', sigungu);
+    if (!need(3, 'housing', '사는 집 형태를 골라줘')) return false;
+    if (!need(3, 'dogCount', '같이 사는 강아지 수를 골라줘')) return false;
   }
-  if (step === 4 && !state.topics.size) return fail(4, '아이템을 하나 이상 골라줘!');
-  if (step === 5 && $('#snsOk').checked && !msg.value.trim()) return fail(5, '공개 동의했으면 한마디도 써줘!', msg);
-  if (step === 6 && !privacyOk.checked) return fail(6, '[필수] 개인정보 수집·이용에 동의해야 선물을 줄 수 있어');
+  if (step === 4) {
+    if (!need(4, 'walk', '산책 횟수를 골라줘')) return false;
+    if (!need(4, 'alone', '혼자 있는 시간을 골라줘')) return false;
+    if (!need(4, 'food', '주로 먹는 밥을 골라줘')) return false;
+  }
+  if (step === 5) {
+    if (!need(5, 'health', '하나 골라줘 (없으면 ‘없어 튼튼해’)')) return false;
+    if (!need(5, 'insurance', '펫보험 상태를 골라줘')) return false;
+  }
+  if (step === 6) {
+    if (!state.topics.size) return fail(6, '아이템을 하나 이상 골라줘!');
+    if (!need(6, 'spend', '한 달 지출을 대충 골라줘')) return false;
+    if (!need(6, 'channels', '주로 사는 곳을 하나 이상 골라줘')) return false;
+  }
+  if (step === 7 && $('#snsOk').checked && !msg.value.trim()) return fail(7, '공개 동의했으면 한마디도 써줘!', msg);
+  if (step === LAST && !privacyOk.checked) return fail(LAST, '[필수] 개인정보 수집·이용에 동의해야 선물을 줄 수 있어');
   return true;
 }
 
 $$('[data-next]').forEach(b => b.addEventListener('click', () => {
   const s = state.step;
   if (s > 0 && !validate(s)) return;
-  if (s === 6) return submit(b);
+  if (s === LAST) return submit(b);
   reward(b);
   go(s + 1);
 }));
@@ -681,9 +790,13 @@ function payload() {
   return {
     event: CONFIG.EVENT, consentVersion: CONFIG.CONSENT_VERSION, clientTime: now,
     name: $('#name').value.trim(), phone: digits(), age14: $('#age14').checked,
-    species: '강아지', petName: $('#petName').value.trim(),
+    ownerAge: ans('ownerAge'), petName: $('#petName').value.trim(),
     breed: $('#breed').value.trim(), petAge: $('#petAge').value,
-    sido: sido.value, sigungu: sigungu.value, topics,
+    weight: ans('weight'), sexNeuter: ans('sexNeuter'), dogCount: ans('dogCount'),
+    sido: sido.value, sigungu: sigungu.value, housing: ans('housing'),
+    walk: ans('walk'), alone: ans('alone'), food: ans('food'),
+    health: ans('health'), insurance: ans('insurance'),
+    topics, spend: ans('spend'), channels: ans('channels'),
     message: msg.value.trim(), nick: $('#nick').value.trim(), snsOk: $('#snsOk').checked,
     privacyOk: privacyOk.checked, mktSms: mktSms.checked, mktKakao: mktKakao.checked,
     box: box.box, boxDesc: box.desc,
@@ -739,7 +852,7 @@ async function submit(btn) {
 
 /* ---------- CLEAR 연출 ---------- */
 function showClear(r, data) {
-  go(7);
+  go(CLEAR);
   $('#dupMsg').classList.toggle('on', !!r.duplicate);
   $('#tCode').textContent = r.code;
   $('#tName').textContent = r.name || data.name;
