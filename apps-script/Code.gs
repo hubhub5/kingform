@@ -149,10 +149,20 @@ function doPost(e) {
       const phones = sh.getRange(2, col_('휴대폰') + 1, last - 1, 1).getValues();
       for (let i = 0; i < phones.length; i++) {
         if (String(phones[i][0]).replace(/\D/g, '') === phone) {
-          const r = sh.getRange(i + 2, 1, 1, HEADERS.length).getValues()[0];
+          const row = i + 2;
+          const r = sh.getRange(row, 1, 1, HEADERS.length).getValues()[0];
+          // 나중에 '동의하고 선물 받기'로 다시 보낸 경우: 동의는 추가만 하고 철회로 덮어쓰지 않음
+          let sms = r[col_('광고_문자')] === 'Y', kakao = r[col_('광고_카카오')] === 'Y';
+          if ((d.mktSms && !sms) || (d.mktKakao && !kakao)) {
+            sms = sms || !!d.mktSms; kakao = kakao || !!d.mktKakao;
+            const set = (h, v) => sh.getRange(row, col_(h) + 1).setValue(v);
+            set('광고_문자', sms ? 'Y' : 'N'); set('광고_카카오', kakao ? 'Y' : 'N');
+            set('광고동의', 'Y'); set('동의시각', new Date());
+            set('동의문구버전', clean_(d.consentVersion, 30));
+          }
           return json_({
             ok: true, duplicate: true, code: r[col_('수령번호')], name: r[col_('이름')],
-            petName: r[col_('반려견이름')], box: r[col_('증정박스')], boxDesc: '',
+            petName: r[col_('반려견이름')], box: r[col_('증정박스')], boxDesc: '', gift: sms && kakao,
           });
         }
       }
@@ -176,7 +186,7 @@ function doPost(e) {
           [d.petName, d.breed].filter(Boolean).map(v => clean_(v, 20)).join(' / '), '']);
     }
 
-    return json_({ ok: true, duplicate: false, code: code, name: d.name, petName: d.petName, box: d.box, boxDesc: d.boxDesc });
+    return json_({ ok: true, duplicate: false, code: code, name: d.name, petName: d.petName, box: d.box, boxDesc: d.boxDesc, gift: !!(d.mktSms && d.mktKakao) });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
   } finally {

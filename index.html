@@ -271,6 +271,26 @@ textarea{resize:none;height:84px;line-height:1.45}
 .show-staff{text-align:center;font-weight:900;font-size:16px;background:var(--yellow);border:3px solid var(--ink);padding:10px}
 .dup{background:var(--lav-2);border:3px solid var(--ink);padding:10px 12px;font-size:14px;font-weight:800;text-align:center;display:none}
 .dup.on{display:block}
+/* 수신동의 확인 팝업 */
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgba(43,22,84,.6)}
+.modal-box{width:100%;max-width:380px;background:var(--paper);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:18px 16px 10px;text-align:center;animation:pop .25s steps(4)}
+.modal-box img{width:112px;height:auto;display:block;margin:0 auto 4px}
+.modal-box h3,.nogift h3{font-family:'Galmuri11',monospace;letter-spacing:0;font-size:18px;margin-bottom:8px}
+.modal-box p{font-size:15px;line-height:1.5;margin-bottom:6px}
+.modal-box .small,.nogift .small{font-size:12px;color:var(--ink-2);font-weight:700;line-height:1.5;margin-bottom:12px}
+.btn.mini{font-size:15px;padding:11px 12px;box-shadow:0 4px 0 var(--ink)}
+/* 동의 없이 완료한 결과 */
+.nogift{background:var(--paper);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:16px 14px 8px;text-align:center}
+.nogift .lock{position:relative;width:110px;margin:0 auto 4px}
+.nogift .lock img{width:110px;height:auto;display:block;filter:grayscale(.35)}
+#noGift{display:flex;flex-direction:column;gap:14px}
+#noGift[hidden]{display:none}
+.ticket.mini .top{background:var(--ink-2)}
+.ticket.mini .box-big{font-size:28px;color:var(--blue)}
+.soft{font-size:13px;color:var(--ink-2)}
+.nogift .lock span{position:absolute;right:-4px;bottom:6px;font-size:30px}
+.nogift p{font-size:15px;line-height:1.55;margin-bottom:10px}
+.nogift b{color:var(--pink)}
 
 /* 코인 팝업 · 파티클 */
 .fx{position:fixed;pointer-events:none;z-index:50;font-family:'Galmuri11',monospace;letter-spacing:0;font-size:20px;color:var(--yellow);text-shadow:2px 2px 0 var(--ink);animation:rise .9s steps(6) forwards}
@@ -466,7 +486,7 @@ textarea{resize:none;height:84px;line-height:1.45}
   <section class="screen" data-step="8">
     <div><span class="stage-tag">LAST · 약속 도장</span>
       <h2>마지막!<br>약속 도장 찍기</h2>
-      <p class="sub">필수만 체크해도 선물은 받아.</p></div>
+      <p class="sub">필수만 체크해도 참가 기념품은 받아. 문자·카톡 소식 받기까지 동의하면 메인 선물 박스!</p></div>
     <div class="consent">
       <div class="cgroup all"><label class="chk all"><input type="checkbox" id="allOk"><span class="box"></span><span>아래 내용에 모두 동의해요</span></label></div>
 
@@ -496,11 +516,11 @@ textarea{resize:none;height:84px;line-height:1.45}
           <tr><th>보유 기간</th><td>동의 철회 시 또는 수집일로부터 2년 중 먼저 오는 날까지</td></tr>
           <tr><th>제3자 제공</th><td>없음. 정보는 킹율 채널만 보관하며 광고주에게 넘기지 않아요.</td></tr>
         </table>
-        <p style="margin-top:6px">동의하지 않아도 증정품은 똑같이 받을 수 있어요. 광고 메시지에는 (광고) 표시와 무료 수신거부 방법이 들어가며, 밤 9시~아침 8시에는 보내지 않아요. 언제든 수신을 거부할 수 있어요.</p>
+        <p style="margin-top:6px">동의하지 않아도 참가 기념품은 드려요. 메인 선물 박스는 문자·카카오톡 수신에 모두 동의한 분께 드려요. 광고 메시지에는 (광고) 표시와 무료 수신거부 방법이 들어가며, 밤 9시~아침 8시에는 보내지 않아요. 언제든 수신을 거부할 수 있어요.</p>
       </details>
       </div>
     </div>
-    <div class="bonus"><img class="px" src="assets/i-star.png" alt=""><span id="bonusText">선택 동의하면 <u>킹율 굿즈 추첨</u>에 자동 응모!</span></div>
+    <div class="bonus"><img class="px" src="assets/i-star.png" alt=""><span id="bonusText"></span></div>
     <p class="fine">개인정보 보호 책임: 킹율 채널 운영팀 · 문의는 행사 부스 또는 유튜브 @킹율 채널 정보를 통해 받아요.</p>
     <p class="err" id="err8"></p>
     <div class="nav"><button class="btn back" data-back>◀</button><button class="btn next yel" id="submitBtn" data-next>🎁 선물 받기</button></div>
@@ -510,6 +530,31 @@ textarea{resize:none;height:84px;line-height:1.45}
   <section class="screen" data-step="9">
     <div class="clear-title">STAGE CLEAR!</div>
     <div class="dup" id="dupMsg">이미 선물 받은 번호야! 아래 교환권을 그대로 보여줘 🐾</div>
+    <div id="noGift" hidden>
+      <div class="ticket mini on">
+        <div class="top"><span>KINGYUL × MEGAZOO</span><span id="mCode">KY-0000</span></div>
+        <div class="main">
+          <img class="px" src="assets/yul-done.gif" alt="킹율">
+          <div>
+            <div class="box-name" id="mFor">참여해줘서 고마워</div>
+            <div class="box-big" id="mBox">참가 기념품</div>
+            <div class="box-desc" id="mDesc"></div>
+          </div>
+        </div>
+        <div class="meta">
+          <div>플레이어<b id="mName">김율</b></div>
+          <div>지금 시각<b class="clock">00:00:00</b></div>
+        </div>
+      </div>
+      <div class="show-staff">👀 이 화면을 스태프에게 보여줘!</div>
+      <div class="nogift">
+        <div class="lock"><img class="px" src="assets/gift-shake.gif" alt="잠긴 메인 선물 상자"><span>🔒</span></div>
+        <h3>메인 선물 상자가 하나 더 있어!</h3>
+        <p><span id="ngPet">우리 아이</span> 맞춤 <b id="ngBox">C 박스</b>는<br><b>문자·카톡 소식 받기</b>에 동의한<br>친구들에게 주고 있어. 지금 동의해도 바로 열 수 있어!</p>
+        <button class="btn yel" id="lateAgree" type="button">🎁 소식 받기 동의하고 메인 선물 열기</button>
+        <p class="small">킹율 이벤트·혜택 소식을 문자·카톡으로 보내드려요. 밤 9시~아침 8시엔 안 보내고, 언제든 수신 거부할 수 있어요.<br>안 해도 괜찮아. 오늘 놀러 와줘서 고마워!</p>
+      </div>
+    </div>
     <div class="gacha" id="gacha" role="button" tabindex="0" aria-label="선물 상자 열기">
       <img class="px" id="giftImg" src="assets/gift-shake.gif" alt="흔들리는 선물 상자">
       <span class="hint blink">상자를 톡! 눌러봐</span>
@@ -539,6 +584,17 @@ textarea{resize:none;height:84px;line-height:1.45}
   <p class="foot">© 킹율 · 메가주 일산 현장 이벤트</p>
 </main>
 
+<div class="modal" id="mktModal" hidden role="dialog" aria-modal="true" aria-labelledby="mktTitle">
+  <div class="modal-box">
+    <img class="px" src="assets/gift-shake.gif" alt="">
+    <h3 id="mktTitle">잠깐! 메인 선물 상자가 잠겨 있어</h3>
+    <p>마케팅 수신동의를 하지 않으면<br>메인 선물은 받아갈 수 없어요.<br><span class="soft">(참가 기념품은 드려요!)</span><br>그래도 이대로 진행할까요?</p>
+    <p class="small">문자·카카오톡으로 킹율 이벤트·혜택 소식을 받아요.<br>언제든 수신 거부할 수 있어요.</p>
+    <button class="btn yel" id="mktAgreeSubmit" type="button">🎁 마케팅 수신동의하고 제출하기</button>
+    <button class="btn sec mini" id="mktSkip" type="button">동의 없이 이대로 제출할게요</button>
+  </div>
+</div>
+
 <script>
 /* ================== 설정 (여기만 고치면 돼요) ================== */
 const CONFIG = {
@@ -554,7 +610,9 @@ const CONFIG = {
     { topic: '훈련·행동', box: 'B', desc: '훈련 꿀템 선물' },
   ],
   BOX_DEFAULT: { box: 'C', desc: '킹율 랜덤 선물' },
-  BONUS_TEXT: '선택 동의하면 <u>킹율 굿즈 추첨</u>에 자동 응모!',
+  // 마케팅 수신 동의 없이 참여한 사람에게 주는 작은 선물 (메인 박스 대신)
+  MINI_GIFT: { name: '참가 기념품', desc: '와줘서 고마운 마음 담은 작은 선물' },
+  BONUS_TEXT: '문자·카톡 수신에 모두 동의하면 <u>메인 선물 박스</u> + 굿즈 추첨 자동 응모!',
 };
 /* ============================================================== */
 
@@ -769,7 +827,7 @@ function validate(step) {
 $$('[data-next]').forEach(b => b.addEventListener('click', () => {
   const s = state.step;
   if (s > 0 && !validate(s)) return;
-  if (s === LAST) return submit(b);
+  if (s === LAST) return giftReady() ? submit(b) : openMktModal();
   reward(b);
   go(s + 1);
 }));
@@ -820,15 +878,34 @@ async function flushQueue() {
 window.addEventListener('online', flushQueue);
 flushQueue();
 
+/* ---------- 선물 조건: 문자·카톡 수신 모두 동의 ---------- */
+const giftReady = () => mktSms.checked && mktKakao.checked;
+function agreeMkt() { mktOk.checked = mktSms.checked = mktKakao.checked = true; syncAll(); }
+const mktModal = $('#mktModal');
+function openMktModal() { mktModal.hidden = false; $('#mktAgreeSubmit').focus(); }
+function closeMktModal() { mktModal.hidden = true; }
+$('#mktAgreeSubmit').addEventListener('click', () => { agreeMkt(); closeMktModal(); submit($('#submitBtn')); });
+$('#mktSkip').addEventListener('click', () => { closeMktModal(); submit($('#submitBtn')); });
+mktModal.addEventListener('click', e => { if (e.target === mktModal) closeMktModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !mktModal.hidden) closeMktModal(); });
+// 동의 없이 끝낸 뒤 결과 화면에서 동의 → 같은 번호로 다시 보내면 서버가 동의만 추가
+$('#lateAgree').addEventListener('click', e => { agreeMkt(); submit(e.currentTarget); });
+
 async function submit(btn) {
+  const label = btn.textContent;
   btn.disabled = true; btn.textContent = '⏳ 저장 중…';
   const data = payload();
+  const wantGift = data.mktSms && data.mktKakao;
   const claimed = LS.get('ky_claimed') || {};
+  const prev = claimed[data.phone];
+  const prevGift = prev && prev.gift !== false;
   let result;
-  if (claimed[data.phone]) {
-    result = { ok: true, duplicate: true, ...claimed[data.phone] };
+  if (prev && (prevGift || !wantGift)) {
+    result = { ok: true, duplicate: true, ...prev, gift: prevGift };
   } else if (DEMO) {
-    result = { ok: true, duplicate: false, code: localCode(), box: data.box, boxDesc: data.boxDesc, name: data.name, petName: data.petName };
+    result = prev
+      ? { ok: true, duplicate: true, upgraded: true, ...prev, gift: true }
+      : { ok: true, duplicate: false, code: localCode(), box: data.box, boxDesc: data.boxDesc, name: data.name, petName: data.petName, gift: wantGift };
     const rows = LS.get('ky_demo_rows') || []; rows.push({ ...data, code: result.code }); LS.set('ky_demo_rows', rows);
     console.log('[DEMO] 저장된 응답', data);
   } else {
@@ -838,22 +915,50 @@ async function submit(btn) {
     } catch (e) {
       // 네트워크 실패: 큐에 넣고 임시 교환권 발급
       const q = LS.get('ky_queue') || []; data.offlineCode = localCode(); q.push(data); LS.set('ky_queue', q);
-      result = { ok: true, duplicate: false, code: data.offlineCode, box: data.box, boxDesc: data.boxDesc, name: data.name, petName: data.petName, offline: true };
+      result = prev
+        ? { ok: true, duplicate: true, upgraded: true, ...prev, gift: true, offline: true }
+        : { ok: true, duplicate: false, code: data.offlineCode, box: data.box, boxDesc: data.boxDesc, name: data.name, petName: data.petName, gift: wantGift, offline: true };
     }
   }
-  if (!result.duplicate) {
-    claimed[data.phone] = { code: result.code, box: result.box, boxDesc: result.boxDesc, name: result.name || data.name, petName: result.petName ?? data.petName };
-    LS.set('ky_claimed', claimed);
-  }
-  state.coins += 500; $('#coins').textContent = String(state.coins).padStart(4, '0');
+  result.gift = result.gift ?? wantGift;
+  if (prev && !prevGift && result.gift) result.upgraded = true;
+  claimed[data.phone] = {
+    code: result.code, box: result.box, boxDesc: result.boxDesc || (prev && prev.boxDesc) || data.boxDesc,
+    name: result.name || data.name, petName: result.petName ?? data.petName, gift: !!result.gift,
+  };
+  LS.set('ky_claimed', claimed);
+  if (!prev) { state.coins += 500; $('#coins').textContent = String(state.coins).padStart(4, '0'); }
   showClear(result, data);
-  btn.disabled = false; btn.textContent = '🎁 선물 받기';
+  btn.disabled = false; btn.textContent = label;
 }
 
 /* ---------- CLEAR 연출 ---------- */
+let autoOpen;
+// 마지막 글자 받침 여부 (콩떡→이랑, 율이→랑)
+const batchim = w => { const c = w.charCodeAt(w.length - 1) - 0xac00; return c >= 0 && c <= 11171 && c % 28 > 0; };
 function showClear(r, data) {
   go(CLEAR);
-  $('#dupMsg').classList.toggle('on', !!r.duplicate);
+  clearTimeout(autoOpen);
+  const dup = r.duplicate && !r.upgraded;
+  $('#dupMsg').classList.toggle('on', !!dup);
+  $('#dupMsg').textContent = '이미 참여한 번호야! 아래 교환권을 그대로 보여줘 🐾';
+  const pet0 = r.petName ?? data.petName;
+  $('#ngPet').textContent = pet0 ? `${pet0}` : '우리 아이';
+  $('#ngBox').textContent = `${r.box} 박스`;
+  $('#mCode').textContent = r.code;
+  $('#mName').textContent = r.name || data.name;
+  $('#mFor').textContent = pet0 ? `${pet0}${batchim(pet0) ? '이랑' : '랑'} 와줘서 고마워` : '와줘서 고마워';
+  $('#mBox').textContent = CONFIG.MINI_GIFT.name;
+  $('#mDesc').textContent = CONFIG.MINI_GIFT.desc;
+  $('#noGift').hidden = !!r.gift;
+  if (!r.gift) {
+    // 동의 없음: 참가 기념품 교환권 + 메인 선물 안내
+    $('#gacha').style.display = 'none'; $('#ticket').classList.remove('on');
+    ['#staffMsg', '#kakaoBtn'].forEach(s => $(s).hidden = true);
+    if (CONFIG.YOUTUBE_URL) { $('#ytBtn').href = CONFIG.YOUTUBE_URL; $('#ytBtn').hidden = false; }
+    if (DEMO) $('#resetBtn').hidden = false;
+    return;
+  }
   $('#tCode').textContent = r.code;
   $('#tName').textContent = r.name || data.name;
   const pet = r.petName ?? data.petName;
@@ -879,7 +984,7 @@ function showClear(r, data) {
   };
   gacha.onclick = open;
   gacha.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
-  setTimeout(open, 3500); // 안 눌러도 자동 오픈
+  autoOpen = setTimeout(open, 3500); // 안 눌러도 자동 오픈
 }
 // 데모: 기록 지우고 처음부터 (팀 시연용)
 $('#resetBtn').addEventListener('click', () => {
@@ -889,7 +994,8 @@ $('#resetBtn').addEventListener('click', () => {
 // 실시간 시계 (스크린샷 재사용 방지)
 setInterval(() => {
   const d = new Date();
-  $('#tClock').textContent = [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
+  const t = [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, '0')).join(':');
+  $$('.clock').forEach(el => el.textContent = t);
 }, 250);
 </script>
 </body>
