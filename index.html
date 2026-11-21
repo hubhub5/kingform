@@ -173,6 +173,8 @@ textarea{resize:none;height:84px;line-height:1.45}
 .chips[data-multi] .c[aria-pressed=true]{background:var(--pink-2)}
 .chips[data-multi] .c[aria-pressed=true]::before{content:'✔ ';color:var(--pink)}
 .chips.invalid{animation:shake .3s steps(3)}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:-6px}
+.quick .c{padding:7px 4px;font-size:13px}
 .chips.invalid .c{border-color:var(--red)}
 
 /* ---------- 버튼 ---------- */
@@ -386,6 +388,9 @@ textarea{resize:none;height:84px;line-height:1.45}
           <option value="">선택</option>
           <option>1살 미만</option><option>1~2살</option><option>3~4살</option><option>5~6살</option><option>7~9살</option><option>10살 이상</option>
         </select></div>
+    </div>
+    <div class="quick" id="breedQuick" role="group" aria-label="견종 빠른 선택">
+      <button type="button" class="c" data-breed="믹스견">믹스견</button><button type="button" class="c" data-breed="말티즈">말티즈</button><button type="button" class="c" data-breed="푸들">푸들</button><button type="button" class="c" data-breed="포메라니안">포메</button>
     </div>
     <datalist id="breeds"></datalist>
     <div class="q"><span class="lbl">체급 <small>몸무게</small></span>
@@ -705,7 +710,13 @@ phone.addEventListener('input', () => {
 });
 const breedList = $('#breeds');
 function fillBreeds(list) { breedList.innerHTML = list.map(b => `<option value="${b}">`).join(''); }
-fillBreeds(DOGS);
+fillBreeds(['믹스견', ...DOGS.filter(d => d !== '믹스견')]);
+// 견종 빠른 선택: 모바일은 datalist 목록이 잘 안 떠서 자주 쓰는 견종은 탭으로
+const breedIn = $('#breed'), quickBtns = $$('#breedQuick .c');
+const syncQuick = () => quickBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.breed === breedIn.value.trim()));
+quickBtns.forEach(b => b.addEventListener('click', () => { breedIn.value = b.dataset.breed; breedIn.classList.remove('invalid'); $('#err2').textContent = ''; syncQuick(); }));
+breedIn.addEventListener('input', syncQuick);
+syncQuick();
 
 // 선택 칩: data-opts 로 버튼 생성, data-multi 면 여러 개, data-none 은 단독 선택
 $$('.chips').forEach(box => {
